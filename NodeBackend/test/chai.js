@@ -1,0 +1,73 @@
+var chai = require('chai');
+var request = require('request');
+
+var assert = chai.assert;
+
+describe('connection toCouchDB', function(){
+    var dbQueries = require('../dbQueries.js');
+    var uuid = '';
+    var rev = '';
+    var postRequest = {body : {buyer:'test', dishes:{test:'test'}}};
+    var getRequest = {query: {name:'test'}};
+    it('retrieves adminCookie', function(done){
+        dbQueries.cookieAuth(function(){
+            assert.equal(dbQueries.adminCookie.length, 59);
+            done();
+        });
+    });
+    it('retrieves menu', function(done){
+        dbQueries.getMenu(null, function(dontcare, body){
+            var menuRows = JSON.parse(body).rows.length;
+            assert.isAtLeast(menuRows, 1);
+            done();
+        });
+    });
+    it('posts order', function(done){
+        dbQueries.postOrder(postRequest, function(errorMsg, message){
+            uuid = message.substring(28,60);
+            assert.equal(errorMsg, null);
+            assert.equal(message, 'Succesfully posted order #: ' + uuid + ' to DB');
+            done();
+        });
+    });
+    it('retrieves that order', function(done){
+        dbQueries.getOrders(getRequest, function(errorMsg, body){
+            assert.equal(errorMsg, null);
+            assert.equal(JSON.parse(body).rows[0].value.test, 'test');
+            done();
+        });
+    });
+    it('adds deleted field to posted order', function(done){
+       var uuidObj = {query : {id : uuid}};
+       dbQueries.deleteOrder(uuidObj, function(errorMsg, message){
+           assert.equal(errorMsg, null);
+           assert.equal(message, 'Deleted order: ' + uuid);
+           request({
+            url: 'http://localhost:5984/cafe_example/'+uuid,
+            method: 'GET',
+            headers:{
+                'cookie':dbQueries.adminCookie
+                }
+            }, (error, response, body)=>{
+                var bod = JSON.parse(body);
+                rev = bod._rev;
+                assert.equal(error, null);
+                assert.equal(bod.deleted, true);
+                done();
+           });
+       });
+    });
+    it('removes it from database', function(done){
+        request({
+            url: 'http://localhost:5984/cafe_example/'+uuid+'?rev='+rev,
+            method: 'DELETE',
+            headers:{
+                'cookie':dbQueries.adminCookie
+                }
+            }, (error, response, body)=>{
+                assert.equal(error, null);
+                assert.equal(JSON.parse(body).ok, true);
+                done();
+           });
+    });
+});

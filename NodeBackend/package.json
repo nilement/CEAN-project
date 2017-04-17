@@ -1,0 +1,37 @@
+{
+  "name": "nodecouch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --reporter spec"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": false,
+      "node": true
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.16.1",
+    "eslint-config-node": "^1.6.0",
+    "eslint-config-node-style-guide": "^3.0.0",
+    "eslint-plugin-node": "^4.1.0",
+    "mocha": "^3.2.0",
+    "sinon": "^1.17.7"
+  },
+  "dependencies": {
+    "assert": "^1.4.1",
+    "body-parser": "^1.17.0",
+    "chai-as-promised": "^6.0.0",
+    "chai-http": "^3.0.0",
+    "cookie-parser": "^1.4.3",
+    "cookies": "^0.7.0",
+    "express": "^4.15.0",
+    "request": "^2.79.0",
+    "twilio": "^2.11.1"
+  }
+}

@@ -1,0 +1,10 @@
+<div flex>
+  <div layout-align="center">
+    <md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
+      <md-nav-item md-nav-sref="root.cart">Krepšelis</md-nav-item>
+      <md-nav-item md-nav-sref="root.history">Užsakymų istorija</md-nav-item>
+      <md-nav-item md-nav-sref="root.order" ng-if="vm.orderCount">Užsakymas {{vm.orderCount}}</md-nav-item>
+    </md-nav-bar>
+  </div>
+  <div ui-view></div ui-view>
+</div>

@@ -1,0 +1,20 @@
+<md-content flex>
+  <md-content flex>
+    <md-toolbar class="md-toolbar-tools">
+      <h1>Jūsų užsakymas</h1>
+    </md-toolbar>
+    <md-tabs flex md-selected="selectedIndex" md-border-bottom md-autoselect>
+      <md-tab flex layout="row" ng-repeat="choice in vm.orders" label={{choice.buyerName}}>
+        <order-item-directive ng-repeat="dish in choice.foods" imageLink="{{dish.imageLink}}" title="{{dish.name}}"
+                              count="{{dish.count}}" price="{{dish.price}}">
+        </order-item-directive>
+        <div flex>
+          <md-button flex class="md-raised" md-colors="{background: 'green'}" ng-click="vm.sendOrder(choice)">
+             Užsakyti {{choice.price}} €
+          </md-button>
+        </div>
+      </md-tab>
+    </md-tabs>
+  </md-content>
+
+
