@@ -1,0 +1,22 @@
+<md-content>
+  <md-toolbar class="md-toolbar-tools">
+    <h1>Užsakymų istorija</h1>
+  </md-toolbar>
+  <h2 ng-if="vm.noOrdersFound">Užsakymų nerasta.</h2>
+  <md-content id="dynamic-content" class="f-clear-padding">
+    <div class="md-accordion" ng-repeat="order in vm.history">
+      <md-toolbar ng-click="vm.toggleOrder($index)">
+        <div class="md-toolbar-tools">
+          <div>{{order.date}} #{{order.orderId}} {{order.buyer}} {{order.price}}€</div>
+          <div flex></div>
+          <div ng-class="{expandCollapse:true, active: order.expanded }"></div>
+        </div>
+      </md-toolbar>
+      <div style="overflow:scroll" ng-class="{dataContent:true, activeContent:order.expanded}">
+        <order-item-directive ng-repeat="dish in order.dishes" image-link="{{dish.imageLink}}" price="{{dish.price}}"
+                              count="{{dish.count}}" title="{{dish.name}}">
+        </order-item-directive>
+      </div>
+    </div>
+  </md-content>
+</md-content>

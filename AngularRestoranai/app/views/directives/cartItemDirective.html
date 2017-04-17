@@ -1,0 +1,20 @@
+<md-card flex layout="column">
+  <md-card-content layout="row" layout-align="space-between center">
+    <div flex="40" class="md-media-sm card-media">
+      <img ng-src={{imageLink}}  width="35" height ="35" class="md-card-image">
+      </img>
+    </div>
+    <div flex layout="column">
+      <div flex layout="row">
+        <div flex="90">{{title}}</div>
+        <span ng-click="removeAllFn()">&times;</span>
+      </div>
+      <div layout="row">
+        <p flex="30"><span ng-click="removeFn()">-</span> {{count}} <span ng-click="addFn()">+</span></p>
+        <p flex="40"></p>
+        <p flex="30">{{parsePrice()}}€</p>
+      </div>
+    </div>
+  </md-card-content>
+</md-card>
+
