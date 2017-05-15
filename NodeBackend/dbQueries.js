@@ -1,6 +1,7 @@
 const request = require('request');
 const moment = require('moment');
 
+//TODO: Move database view names as global constants
 
 const baseDbUrl = 'localhost:5984';
 const databaseUrl = 'http://localhost:5984/cafe_example/';
@@ -119,7 +120,7 @@ Queries.prototype.getOrders = function(req, fnOnComplete){
   }
   // order name must consist only of alphabet characters
   let orderName = req.query.name.replace(/\W/g,'');
-  let path =  databaseUrl + '_design/cafeData/_view/name_view?key='+ '\"' + orderName + '\"';
+  let path =  databaseUrl + '_design/cafeData/_view/dishes_by_id?key='+ '\"' + orderName + '\"';
   request({
     url: path,
     method: 'GET',
@@ -178,7 +179,7 @@ Queries.prototype.deleteOrder = function(req, fnOnComplete){
 
 Queries.prototype.placeAuthentication = function(authObj,  fnOnComplete){
     if (!this.adminCookie){
-        return this.cookieAuth(this.deleteOrder.bind(this), authObj, fnOnComplete);
+        return this.cookieAuth(this.placeAuthentication.bind(this), authObj, fnOnComplete);
     }
     request({
         url: uuidUrl,
@@ -187,27 +188,28 @@ Queries.prototype.placeAuthentication = function(authObj,  fnOnComplete){
             cookie: this.adminCookie
         }
     }, (error, response, body) => {
+        let uuid;
         if (response.statusCode === 200){
-            authObj.uuid = JSON.parse(body).uuids[0];
+            uuid = JSON.parse(body).uuids[0];
             authObj.status = 'unconfirmed';
-            authObj.date = moment.format();
+            authObj.date = moment().format();
         }
         else {
             return fnOnComplete({errorMsg: 'Unhandled error retrieving UUID!'});
         }
         request({
-            url: path,
-            method: 'POST',
+            url: databaseUrl + uuid,
+            method: 'PUT',
             json : authObj,
             headers: {
                 'cookie': this.adminCookie
             }
         }, (error, response, body) =>{
             if ( response.statusCode === 201){
-                fnOnComplete(null, true);
+                return fnOnComplete(null, 'Auth request placed', authObj);
             }
             if ( response.statusCode === 401 ){
-                return this.cookieAuth(this.deleteOrder.bind(this), authObj, fnOnComplete);
+                return this.cookieAuth(this.placeAuthentication.bind(this), authObj, fnOnComplete);
             }
             else {
                 fnOnComplete({errorMsg: "Couldn't place Auth in DB. "});
@@ -215,5 +217,16 @@ Queries.prototype.placeAuthentication = function(authObj,  fnOnComplete){
         });
     });
 };
+
+/*Queries.prototype.retrieveAuth = function(phoneNumber, fnOnComplete){
+    if (!this.adminCookie){
+        return this.cookieAuth(this.retrieveAuth().bind(this), authObj, fnOnComplete);
+    }
+    // here goes sanitisation
+    let path = databaseUrl + '_design/cafeData/_view/auth_codes_by_phone?key='+ '\"' + phoneNumber + '\"';
+    request({
+
+    })
+}*/
 
 module.exports = new Queries();

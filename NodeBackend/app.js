@@ -56,7 +56,7 @@ app.use('/api/getUserOrders', function (req, res) {
          res.send(response);
       }
   }
-  dbQueries.getOrders(req, fnOnComplete); 
+  dbQueries.getOrders(req, fnOnComplete);
 });
 
 app.use('/api/deleteOrder', function (req,res) {
@@ -71,44 +71,42 @@ app.use('/api/deleteOrder', function (req,res) {
 });
 
 app.post('/api/authentication', function (req, res) {
-    var fnOnDBComplete = function(err, success){
+    const fnOnDBComplete = function(err, success, authObj){
         if (success){
-            twilioAPI.sendMessage(code, phoneNumber, fnOnComplete);
+            twilioAPI.sendMessage(authObj.code, authObj.phoneNumber, fnOnSendComplete);
         }
         else if (err) {
             return res.send({err: err});
         }
         else {
-            return res.send({err: "Unknown placing auth!"});
+            return res.send({err: "Unknown placing auth error!"});
         }
     };
-    var fnOnSendComplete = function(err){
+    const fnOnSendComplete = function(err){
         if (err){
             return res.send({ err: err });
         } else {
             res.send('Code sent!');
         }
     };
-     var recaptchaSuccess = function(err){
+     const recaptchaSuccess = function(err){
         if (err) {
             res.send({ err : "Recaptcha fail!" });
         }
-        console.log("Recaptcha success!");
-        var phoneNumber = req.body.phoneNumber;
+        const phoneNumber = req.body.phoneNumber;
         // phone lookup
 //        if (!twilioAPI.phoneLookup(phoneNumber)){
 //            res.send({ err : "Invalid phone number!" });
 //        }
-        var code = authentication.generateCode();
-        var authObj = { phoneNumber : phoneNumber, code: code};
-        //dbQueries.placeAuthentication(authObj, fnOnDBComplete);
-        twilioAPI.sendMessage(code, phoneNumber, fnOnSendComplete);
+        const code = authentication.generateCode();
+        const authObj = { phoneNumber : phoneNumber, code: code};
+        dbQueries.placeAuthentication(authObj, fnOnDBComplete);
+//      twilioAPI.sendMessage(code, phoneNumber, fnOnSendComplete);
     };
-    var recaptcha = req.body.recaptcha;
+    let recaptcha = req.body.recaptcha;
     authentication.verifyRecaptcha(recaptcha, recaptchaSuccess);
 });
 
-app.post('/api/recaptcha', function (req, res) {
-  authentication.verifyRecaptcha(req);
-  res.send('fuck do i know');
+app.post('/api/phonecode', function (req, res){
+    res.send({ err: 'Not yet implemented!' });
 });

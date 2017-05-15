@@ -7,3 +7,7 @@
 **/.vscode/**
 **.vscode/**
 .vscode/**
+.idea/
+CouchDB/data/.delete/
+CouchDB/var/
+NodeBackend/dist/views/extra/

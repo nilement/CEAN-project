@@ -96,8 +96,8 @@ angular.module('menuApp').factory('httpService', function($http){
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }). then(function successCallback(){
-                   return 'message sent';
+                }). then(function successCallback(res){
+                   return res;
                 });
             }
 	};

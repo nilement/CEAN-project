@@ -13,10 +13,8 @@ TwilioApi.prototype.sendMessage = function(message, phoneNumber, fnOnComplete){
         from: '+370 668 41460'
     }, function(err, message){
         if (err){
-            console.log(err)
             fnOnComplete('Failed to send: ' + err);
         } else {
-            console.log(message.sid);
             fnOnComplete(null);
         }
     });
