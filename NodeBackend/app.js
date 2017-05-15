@@ -107,6 +107,6 @@ app.post('/api/authentication', function (req, res) {
     authentication.verifyRecaptcha(recaptcha, recaptchaSuccess);
 });
 
-app.post('/api/phonecode', function (req, res){
+app.post('/api/phoneCode', function (req, res){
     res.send({ err: 'Not yet implemented!' });
 });

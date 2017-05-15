@@ -34,16 +34,18 @@ angular.module('menuApp').controller('authenticationController', function($scope
     vcRecaptchaService.reload($scope.widgetId);
     $scope.response = null;
   };
-
+//TODO: Handle recaptcha fail
   $scope.submitForm = function(){
-    var recaptcha = { response : $scope.response };
+    let recaptcha = { response : $scope.response };
     $scope.response = null;
     httpService.sendRecaptcha(recaptcha).then(
       function success(){
         $mdDialog.hide();
-      });
-  };
+      }, function fail(){
 
+        });
+  };
+//TODO: Handle authRequest fail
   $scope.submitAuth = function(){
       var data = { phoneNumber: $scope.phoneNumber, recaptcha: $scope.response};
       httpService.sendAuthentication(data).then(
@@ -51,6 +53,10 @@ angular.module('menuApp').controller('authenticationController', function($scope
               console.log(response);
               $scope.changeState();
           });
+  };
+
+  $scope.submitCode = function(){
+      httpService.sendCode($scope.phoneCode)
   };
 
   $scope.dataLog = function(){

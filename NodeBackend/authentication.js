@@ -1,9 +1,6 @@
-var uuidV4 = require('uuid/v4');
-var jwt = require('jsonwebtoken');
-var request = require('request');
+const request = require('request');
 
-var Authentication = function(){
-    this.secretKey = 'mySecret';
+const Authentication = function(){
     this.recaptchaSecret = '6LdCmh0UAAAAAMgi96xrfXfyXA2PyhsLzs_r_2hr';
 };
 
@@ -16,7 +13,7 @@ Authentication.prototype.verifyRecaptcha = function(captchaResponse, successFn){
             response: captchaResponse
         }
     }, function (error, response, body) {
-        var googleResponse = JSON.parse(body);
+        let googleResponse = JSON.parse(body);
         if (error) {
                 console.log('Error!: ' + error);
                 successFn('Something is wrong!');
@@ -30,19 +27,11 @@ Authentication.prototype.verifyRecaptcha = function(captchaResponse, successFn){
             }
         }
     });
-}
+};
 
 Authentication.prototype.generateCode = function(){
     return Math.floor(Math.random()* 9000 + 1000);
-}
-
-Authentication.prototype.issueCookie = function(phone){
-    var token = jwt.sign({phoneNumber:phone, code:1234}, this.secretKey);
-    var decoded = jwt.verify(token, this.secretKey);
-    console.log('token is : '+ token);
-    console.log('decoded is : ' + decoded.phoneNumber);
-    console.log('decoded is : ' + decoded.code);
-    return token;
 };
+
 
 module.exports = new Authentication();

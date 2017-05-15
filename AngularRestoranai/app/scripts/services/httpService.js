@@ -1,5 +1,5 @@
 'use strict';
-
+//TODO: Add fail handlers
 angular.module('menuApp').factory('httpService', function($http){
 	return {
 			backendAddress : 'http://localhost:5000',
@@ -98,6 +98,19 @@ angular.module('menuApp').factory('httpService', function($http){
                     }
                 }). then(function successCallback(res){
                    return res;
+                });
+            },
+            sendCode : function(code, order){
+			    let orderObj = { code : code, order : order};
+			    return $http({
+			        url: this.backendAddress + '/api/phoneCode',
+                    method: 'POST',
+                    data: orderObj,
+                    headers: {
+			            'Content-Type' : 'application/json'
+                    }
+                }).then(function successCallback(res){
+                    return res
                 });
             }
 	};
