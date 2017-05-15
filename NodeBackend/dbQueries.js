@@ -1,4 +1,6 @@
 const request = require('request');
+const moment = require('moment');
+
 
 const baseDbUrl = 'localhost:5984';
 const databaseUrl = 'http://localhost:5984/cafe_example/';
@@ -89,8 +91,8 @@ Queries.prototype.getDish = function(req, fnOnComplete){
   if (req.query.dishId === undefined){
     return fnOnComplete({errorMsg: 'Invalid request!'});
   }
-  var orderId = req.query.dishId.replace(/\D/g, '');
-  var path = databaseUrl + '_design/cafeData/_view/dishes_by_id?key=' + orderId;
+  let orderId = req.query.dishId.replace(/\D/g, '');
+  let path = databaseUrl + '_design/cafeData/_view/dishes_by_id?key=' + orderId;
   request({
     url: path,
     method: 'GET',
@@ -116,8 +118,8 @@ Queries.prototype.getOrders = function(req, fnOnComplete){
     return this.cookieAuth(this.getOrders.bind(this), req, fnOnComplete);
   }
   // order name must consist only of alphabet characters
-  var orderName = req.query.name.replace(/\W/g,'');
-  var path =  databaseUrl + '_design/cafeData/_view/name_view?key='+ '\"' + orderName + '\"';
+  let orderName = req.query.name.replace(/\W/g,'');
+  let path =  databaseUrl + '_design/cafeData/_view/name_view?key='+ '\"' + orderName + '\"';
   request({
     url: path,
     method: 'GET',
@@ -139,8 +141,8 @@ Queries.prototype.deleteOrder = function(req, fnOnComplete){
     return this.cookieAuth(this.deleteOrder.bind(this), req, fnOnComplete);
   }
   // order id must consist only of digits and letters
-  var orderId = req.query.id.replace(/\W/g,'');
-  var path = databaseUrl + orderId;
+  let orderId = req.query.id.replace(/\W/g,'');
+  let path = databaseUrl + orderId;
   request({
     // to set deleted on order it must be created anew with changed property
     url: path,
@@ -154,7 +156,7 @@ Queries.prototype.deleteOrder = function(req, fnOnComplete){
     } else if (response.statusCode === 401){
           return this.cookieAuth(this.deleteOrder.bind(this), req, fnOnComplete);
         }
-      var orderFromDb = JSON.parse(body); // rebuild order
+      let orderFromDb = JSON.parse(body); // rebuild order
       orderFromDb.deleted = true;
       request({  // rewrite the order
         url: path,
@@ -179,42 +181,39 @@ Queries.prototype.placeAuthentication = function(authObj,  fnOnComplete){
         return this.cookieAuth(this.deleteOrder.bind(this), authObj, fnOnComplete);
     }
     request({
-        url: path,
-        method: 'POST',
-        json : authObj,
-        headers: {
-            'cookie': this.adminCookie
-        }
-    }, (error, response, body) =>{
-        if ( response.statusCode === 201){
-            fnOnComplete(null, true);
-        }
-        if ( response.statusCode === 401 ){
-            return this.cookieAuth(this.deleteOrder.bind(this), authObj, fnOnComplete);
-        }
-        else {
-            fnOnComplete({errorMsg: "Couldn't place Auth in DB. "}); return;
-        }
-    });
-};
-
-Queries.prototype.getUUID = function() {
-    request({
-        // first retrieve a uuid for new order
         url: uuidUrl,
         method: 'GET',
         headers: {
             cookie: this.adminCookie
         }
     }, (error, response, body) => {
-        if (error) {
-            return fnOnComplete({errorMsg: 'Cant retrieve UUID'});
+        if (response.statusCode === 200){
+            authObj.uuid = JSON.parse(body).uuids[0];
+            authObj.status = 'unconfirmed';
+            authObj.date = moment.format();
         }
-        if (response.statusCode !== 200) {
+        else {
             return fnOnComplete({errorMsg: 'Unhandled error retrieving UUID!'});
         }
-        var uuid = JSON.parse(body).uuids[0];
-    })
-}
+        request({
+            url: path,
+            method: 'POST',
+            json : authObj,
+            headers: {
+                'cookie': this.adminCookie
+            }
+        }, (error, response, body) =>{
+            if ( response.statusCode === 201){
+                fnOnComplete(null, true);
+            }
+            if ( response.statusCode === 401 ){
+                return this.cookieAuth(this.deleteOrder.bind(this), authObj, fnOnComplete);
+            }
+            else {
+                fnOnComplete({errorMsg: "Couldn't place Auth in DB. "});
+            }
+        });
+    });
+};
 
 module.exports = new Queries();
