@@ -1,10 +1,10 @@
-var request = require('request');
+const request = require('request');
 
-var baseDbUrl = 'localhost:5984';
-var databaseUrl = 'http://localhost:5984/cafe_example/';
-var uuidUrl = 'http://localhost:5984/_uuids';
+const baseDbUrl = 'localhost:5984';
+const databaseUrl = 'http://localhost:5984/cafe_example/';
+const uuidUrl = 'http://localhost:5984/_uuids';
 
-var Queries = function(){
+const Queries = function(){
   this.adminPassword = 'slapt231!';
   this.adminName = 'admin';
   this.adminCookie = '';
@@ -19,8 +19,8 @@ var Queries = function(){
 // originalFunction = function(req, fnOnComplete)
 Queries.prototype.cookieAuth = function(originalFunction, req, fnOnComplete){
   // URL for CouchDB admin cookie retrieval
-  var path = 'http://' + this.adminName + ':' + this.adminPassword + '@' + baseDbUrl + '/_session';
-  var auth = {name: this.adminName, password : this.adminPassword};
+  const path = 'http://' + this.adminName + ':' + this.adminPassword + '@' + baseDbUrl + '/_session';
+  const auth = {name: this.adminName, password : this.adminPassword};
   request({
     url: path,
     method: 'POST',
@@ -43,6 +43,7 @@ Queries.prototype.postOrder = function(req, fnOnComplete){
   if (!this.adminCookie){
     return this.cookieAuth(this.postOrder.bind(this), req, fnOnComplete);
   }
+    req.body.deleted = false;
     request({
       // first retrieve a uuid for new order
       url: uuidUrl,
@@ -52,13 +53,12 @@ Queries.prototype.postOrder = function(req, fnOnComplete){
         }
     }, (error, response, body)=>{
       if (error){
-        return fnOnComplete({errorMsg : "Can't retrieve UUID"});
+        return fnOnComplete({ errorMsg : 'Cant retrieve UUID' });
       }
       if (response.statusCode !== 200){
         return fnOnComplete({errorMsg : 'Unhandled error retrieving UUID!'});
       }
-      req.body.deleted = false;
-      var uuid = JSON.parse(body).uuids[0];
+      let uuid = JSON.parse(body).uuids[0];
       request({
         // valid uuid received, now place the order
         url: databaseUrl + uuid,
@@ -163,7 +163,7 @@ Queries.prototype.deleteOrder = function(req, fnOnComplete){
         headers:{
         'cookie':this.adminCookie
         }
-      }, (error, response, body)=>{ 
+      }, (error, response, body)=>{
         if (error) {
            fnOnComplete({errorMsg: "Couldn't delete in DB. "}); return;
           } else if (response.statusCode === 401){
@@ -174,17 +174,47 @@ Queries.prototype.deleteOrder = function(req, fnOnComplete){
     });
 };
 
-Queries.prototype.placeAuthentication = function(phoneNumber, code, fnOnComplete){
+Queries.prototype.placeAuthentication = function(authObj,  fnOnComplete){
+    if (!this.adminCookie){
+        return this.cookieAuth(this.deleteOrder.bind(this), authObj, fnOnComplete);
+    }
     request({
         url: path,
         method: 'POST',
+        json : authObj,
         headers: {
             'cookie': this.adminCookie
         }
     }, (error, response, body) =>{
-
+        if ( response.statusCode === 201){
+            fnOnComplete(null, true);
+        }
+        if ( response.statusCode === 401 ){
+            return this.cookieAuth(this.deleteOrder.bind(this), authObj, fnOnComplete);
+        }
+        else {
+            fnOnComplete({errorMsg: "Couldn't place Auth in DB. "}); return;
+        }
     });
-    fnOnComplete();
 };
+
+Queries.prototype.getUUID = function() {
+    request({
+        // first retrieve a uuid for new order
+        url: uuidUrl,
+        method: 'GET',
+        headers: {
+            cookie: this.adminCookie
+        }
+    }, (error, response, body) => {
+        if (error) {
+            return fnOnComplete({errorMsg: 'Cant retrieve UUID'});
+        }
+        if (response.statusCode !== 200) {
+            return fnOnComplete({errorMsg: 'Unhandled error retrieving UUID!'});
+        }
+        var uuid = JSON.parse(body).uuids[0];
+    })
+}
 
 module.exports = new Queries();

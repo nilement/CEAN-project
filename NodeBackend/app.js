@@ -1,11 +1,11 @@
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 
-var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
-var dbQueries = require('./dbQueries.js');
-var twilioAPI = require('./twilioAPI.js');
-var authentication = require('./authentication.js');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const dbQueries = require('./dbQueries.js');
+const twilioAPI = require('./twilioAPI.js');
+const authentication = require('./authentication.js');
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
@@ -27,7 +27,7 @@ app.use('/menu', function (req, res)  {
 });
 
 app.use('/api/getDish', function (req, res) {
-  var fnOnComplete = function(err, response){
+  const fnOnComplete = function(err, response){
     if (err){
       res.send({ err: err });
     } else{
@@ -38,7 +38,7 @@ app.use('/api/getDish', function (req, res) {
 });
 
 app.post('/api/postOrder', function (req, res){
-  var fnOnComplete = function(err, response){
+  const fnOnComplete = function(err, response){
       if (err){
          res.send({ err: err });
         } else {
@@ -70,13 +70,19 @@ app.use('/api/deleteOrder', function (req,res) {
   dbQueries.deleteOrder(req,fnOnComplete);
 });
 
-app.use('/twilio', function (req,res){
-  twilioAPI.sendMessage(1459);
-  res.send('sent ;)');
-});
-
 app.post('/api/authentication', function (req, res) {
-    var fnOnComplete = function(err){
+    var fnOnDBComplete = function(err, success){
+        if (success){
+            twilioAPI.sendMessage(code, phoneNumber, fnOnComplete);
+        }
+        else if (err) {
+            return res.send({err: err});
+        }
+        else {
+            return res.send({err: "Unknown placing auth!"});
+        }
+    };
+    var fnOnSendComplete = function(err){
         if (err){
             return res.send({ err: err });
         } else {
@@ -94,8 +100,9 @@ app.post('/api/authentication', function (req, res) {
 //            res.send({ err : "Invalid phone number!" });
 //        }
         var code = authentication.generateCode();
-        //dbQueries.placeAuthentication(fnOnComplete);
-        twilioAPI.sendMessage(code, phoneNumber, fnOnComplete);
+        var authObj = { phoneNumber : phoneNumber, code: code};
+        //dbQueries.placeAuthentication(authObj, fnOnDBComplete);
+        twilioAPI.sendMessage(code, phoneNumber, fnOnSendComplete);
     };
     var recaptcha = req.body.recaptcha;
     authentication.verifyRecaptcha(recaptcha, recaptchaSuccess);

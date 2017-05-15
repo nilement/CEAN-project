@@ -2,26 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bb83b71e-ec61-49ef-8e5a-018340899f94" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AngularRestoranai/app/scripts/controllers/ordersController.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AngularRestoranai/app/scripts/directives/orderItemDirective.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AngularRestoranai/app/scripts/services/stateSharingService.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AngularRestoranai/app/views/directives/orderItemDirective.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/AngularRestoranai/app/views/orderView.html" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AngularRestoranai/.idea/workspace.xml" afterPath="$PROJECT_DIR$/AngularRestoranai/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AngularRestoranai/app/index.html" afterPath="$PROJECT_DIR$/AngularRestoranai/app/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AngularRestoranai/app/scripts/app.js" afterPath="$PROJECT_DIR$/AngularRestoranai/app/scripts/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AngularRestoranai/app/scripts/controllers/cartController.js" afterPath="$PROJECT_DIR$/AngularRestoranai/app/scripts/controllers/cartController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AngularRestoranai/app/scripts/controllers/mainController.js" afterPath="$PROJECT_DIR$/AngularRestoranai/app/scripts/controllers/mainController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AngularRestoranai/app/scripts/services/httpService.js" afterPath="$PROJECT_DIR$/AngularRestoranai/app/scripts/services/httpService.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AngularRestoranai/app/styles/main.css" afterPath="$PROJECT_DIR$/AngularRestoranai/app/styles/main.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AngularRestoranai/app/views/cartView.html" afterPath="$PROJECT_DIR$/AngularRestoranai/app/views/cartView.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AngularRestoranai/app/views/mainView.html" afterPath="$PROJECT_DIR$/AngularRestoranai/app/views/mainView.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AngularRestoranai/bower.json" afterPath="$PROJECT_DIR$/AngularRestoranai/bower.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NodeBackend/app.js" afterPath="$PROJECT_DIR$/NodeBackend/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NodeBackend/authentication.js" afterPath="$PROJECT_DIR$/NodeBackend/authentication.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NodeBackend/dbQueries.js" afterPath="$PROJECT_DIR$/NodeBackend/dbQueries.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NodeBackend/dist/scripts/scripts-687edb6324.js" afterPath="$PROJECT_DIR$/NodeBackend/dist/scripts/scripts-687edb6324.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NodeBackend/package.json" afterPath="$PROJECT_DIR$/NodeBackend/package.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NodeBackend/twilioAPI.js" afterPath="$PROJECT_DIR$/NodeBackend/twilioAPI.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -45,7 +30,7 @@
       <file leaf-file-name="authDialogView.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AngularRestoranai/app/views/extra/authDialogView.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="540">
+            <state relative-caret-position="480">
               <caret line="30" column="37" lean-forward="false" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
               <folding />
             </state>
@@ -55,18 +40,8 @@
       <file leaf-file-name="authenticationController.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AngularRestoranai/app/scripts/controllers/authenticationController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="846">
+            <state relative-caret-position="752">
               <caret line="47" column="56" lean-forward="false" selection-start-line="47" selection-start-column="56" selection-end-line="47" selection-end-column="56" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="cartController.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AngularRestoranai/app/scripts/controllers/cartController.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="162">
-              <caret line="9" column="88" lean-forward="false" selection-start-line="9" selection-start-column="88" selection-end-line="9" selection-end-column="88" />
               <folding />
             </state>
           </provider>
@@ -75,7 +50,7 @@
       <file leaf-file-name="httpService.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AngularRestoranai/app/scripts/services/httpService.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1764">
+            <state relative-caret-position="1568">
               <caret line="98" column="50" lean-forward="false" selection-start-line="98" selection-start-column="50" selection-end-line="98" selection-end-column="50" />
               <folding>
                 <marker date="1494764428546" expanded="true" signature="1482:1484" ph="{...}" />
@@ -88,8 +63,8 @@
       <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/NodeBackend/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="80" column="39" lean-forward="false" selection-start-line="80" selection-start-column="39" selection-end-line="80" selection-end-column="39" />
+            <state relative-caret-position="224">
+              <caret line="70" column="3" lean-forward="false" selection-start-line="70" selection-start-column="3" selection-end-line="70" selection-end-column="3" />
               <folding />
             </state>
           </provider>
@@ -98,7 +73,7 @@
       <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AngularRestoranai/app/scripts/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="756">
+            <state relative-caret-position="672">
               <caret line="42" column="8" lean-forward="false" selection-start-line="42" selection-start-column="8" selection-end-line="42" selection-end-column="8" />
               <folding />
             </state>
@@ -108,8 +83,18 @@
       <file leaf-file-name="authentication.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/NodeBackend/authentication.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
-              <caret line="21" column="16" lean-forward="false" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="16" />
+            <state relative-caret-position="688">
+              <caret line="43" column="10" lean-forward="false" selection-start-line="43" selection-start-column="10" selection-end-line="43" selection-end-column="10" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -118,7 +103,7 @@
       <file leaf-file-name="twilioAPI.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/NodeBackend/twilioAPI.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
+            <state relative-caret-position="304">
               <caret line="19" column="29" lean-forward="false" selection-start-line="19" selection-start-column="29" selection-end-line="19" selection-end-column="29" />
               <folding />
             </state>
@@ -128,8 +113,9 @@
       <file leaf-file-name="dbQueries.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/NodeBackend/dbQueries.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2854">
-              <caret line="165" column="36" lean-forward="false" selection-start-line="165" selection-start-column="36" selection-end-line="165" selection-end-column="36" />
+            <state relative-caret-position="309">
+              <caret line="21" column="7" lean-forward="false" selection-start-line="21" selection-start-column="7" selection-end-line="21" selection-end-column="7" />
+              <caret line="22" column="7" lean-forward="false" selection-start-line="22" selection-start-column="7" selection-end-line="22" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -150,6 +136,7 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>Can't get</find>
+      <find>var</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -167,15 +154,21 @@
         <option value="$PROJECT_DIR$/AngularRestoranai/app/views/extra/authDialogView.html" />
         <option value="$PROJECT_DIR$/AngularRestoranai/app/scripts/controllers/authenticationController.js" />
         <option value="$PROJECT_DIR$/AngularRestoranai/app/scripts/services/httpService.js" />
-        <option value="$PROJECT_DIR$/NodeBackend/app.js" />
-        <option value="$PROJECT_DIR$/NodeBackend/authentication.js" />
         <option value="$PROJECT_DIR$/NodeBackend/twilioAPI.js" />
+        <option value="$PROJECT_DIR$/NodeBackend/authentication.js" />
+        <option value="$PROJECT_DIR$/NodeBackend/app.js" />
         <option value="$PROJECT_DIR$/NodeBackend/dbQueries.js" />
       </list>
     </option>
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsFlowSettings">
+    <service-enabled>false</service-enabled>
+    <exe-path />
+    <annotation-enable>false</annotation-enable>
+    <other-services-enabled>false</other-services-enabled>
+  </component>
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
@@ -221,6 +214,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -250,7 +244,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -261,8 +254,10 @@
     <property name="js.eslint.eslintPackage" value="/usr/local/lib/node_modules/eslint" />
     <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
     <property name="nodejs.mocha.mocha_node_package_dir" value="$PROJECT_DIR$/AngularRestoranai/node_modules/mocha" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Font" />
     <property name="javascript.nodejs.core.library.configured.version" value="7.10.0" />
+    <property name="JavaScriptPreferStrict" value="false" />
+    <property name="JavaScriptWeakerCompletionTypeGuess" value="true" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
@@ -339,12 +334,13 @@
       <workItem from="1494675901428" duration="1766000" />
       <workItem from="1494755154163" duration="11117000" />
       <workItem from="1494770917791" duration="1782000" />
-      <workItem from="1494837031651" duration="812000" />
+      <workItem from="1494837031651" duration="2942000" />
+      <workItem from="1494854559924" duration="1403000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="16151000" />
+    <option name="totallyTimeSpent" value="19684000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -393,14 +389,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/AngularRestoranai/app/scripts/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="756">
-          <caret line="42" column="8" lean-forward="false" selection-start-line="42" selection-start-column="8" selection-end-line="42" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/NodeBackend/authentication.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="432">
@@ -675,7 +663,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AngularRestoranai/app/scripts/controllers/cartController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
+        <state relative-caret-position="144">
           <caret line="9" column="88" lean-forward="false" selection-start-line="9" selection-start-column="88" selection-end-line="9" selection-end-column="88" />
           <folding />
         </state>
@@ -683,7 +671,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AngularRestoranai/app/views/extra/authDialogView.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
+        <state relative-caret-position="480">
           <caret line="30" column="37" lean-forward="false" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="37" />
           <folding />
         </state>
@@ -699,7 +687,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AngularRestoranai/app/scripts/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="756">
+        <state relative-caret-position="672">
           <caret line="42" column="8" lean-forward="false" selection-start-line="42" selection-start-column="8" selection-end-line="42" selection-end-column="8" />
           <folding />
         </state>
@@ -707,23 +695,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AngularRestoranai/app/scripts/controllers/authenticationController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="846">
+        <state relative-caret-position="752">
           <caret line="47" column="56" lean-forward="false" selection-start-line="47" selection-start-column="56" selection-end-line="47" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/NodeBackend/authentication.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="21" column="16" lean-forward="false" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="16" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/NodeBackend/twilioAPI.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
+        <state relative-caret-position="304">
           <caret line="19" column="29" lean-forward="false" selection-start-line="19" selection-start-column="29" selection-end-line="19" selection-end-column="29" />
           <folding />
         </state>
@@ -731,7 +711,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AngularRestoranai/app/scripts/services/httpService.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1764">
+        <state relative-caret-position="1568">
           <caret line="98" column="50" lean-forward="false" selection-start-line="98" selection-start-column="50" selection-end-line="98" selection-end-column="50" />
           <folding>
             <marker date="1494764428546" expanded="true" signature="1482:1484" ph="{...}" />
@@ -740,18 +720,35 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/NodeBackend/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="80" column="39" lean-forward="false" selection-start-line="80" selection-start-column="39" selection-end-line="80" selection-end-column="39" />
+        <state relative-caret-position="224">
+          <caret line="70" column="3" lean-forward="false" selection-start-line="70" selection-start-column="3" selection-end-line="70" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/NodeBackend/authentication.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="688">
+          <caret line="43" column="10" lean-forward="false" selection-start-line="43" selection-start-column="10" selection-end-line="43" selection-end-column="10" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/NodeBackend/dbQueries.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2854">
-          <caret line="165" column="36" lean-forward="false" selection-start-line="165" selection-start-column="36" selection-end-line="165" selection-end-column="36" />
+        <state relative-caret-position="309">
+          <caret line="21" column="7" lean-forward="false" selection-start-line="21" selection-start-column="7" selection-end-line="21" selection-end-column="7" />
+          <caret line="22" column="7" lean-forward="false" selection-start-line="22" selection-start-column="7" selection-end-line="22" selection-end-column="7" />
           <folding />
         </state>
       </provider>

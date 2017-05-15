@@ -33,8 +33,7 @@ Authentication.prototype.verifyRecaptcha = function(captchaResponse, successFn){
 }
 
 Authentication.prototype.generateCode = function(){
-    var code = 1234;
-    return code;
+    return Math.floor(Math.random()* 9000 + 1000);
 }
 
 Authentication.prototype.issueCookie = function(phone){
