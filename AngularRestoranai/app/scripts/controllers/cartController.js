@@ -7,7 +7,7 @@ angular.module('menuApp').config(function($sceDelegateProvider) {
   ]);
 });
 
-angular.module('menuApp').controller('cartController', function(httpService, stateSharingService){
+angular.module('menuApp').controller('cartController', function(httpService, $mdDialog){
   var vm = this;
   vm.basketPrice = 0;
   vm.basket = [];
@@ -82,23 +82,33 @@ angular.module('menuApp').controller('cartController', function(httpService, sta
   };
 
   vm.finishOrder = function(){
-    if (stateSharingService.orders.length > 0){
-      window.alert("Jūs jau turite paruošta užsakymą!")
-      return
+    if (vm.basket.length == 0){
+      window.alert('Cart is empty!');
+      return;
     }
-    var order = {};
-    order.foods = [];
-    while(vm.basket.length > 0){
-      var ordered = { name : vm.basket[0].name, price : vm.basket[0].price, count : vm.basket[0].count,
-        imageLink : vm.basket[0].imageLink, itemId : vm.basket[0].itemId};
-      order.foods.push(ordered);
-      vm.basket.splice(0,1);
+    var foods = [];
+    for (var i = 0; i < vm.basket.length; i++){
+      foods.push({ count : vm.basket[i].count, dish : vm.basket[i].itemId });
     }
-    order.price = vm.basketPrice;
-    order.buyerName = vm.buyerName;
-    vm.basketPrice = 0;
-    vm.buyerName = '';
-    stateSharingService.orders.push(order);
-    console.log(stateSharingService.orders.length);
+    var orderObj=angular.toJson({dishes: foods, buyer: vm.buyerName, total: vm.basketPrice });
+    httpService.sendOrder(orderObj)
+      .then(function success(res){
+        if (res.data.err){
+          window.alert("Can't find DB.");
+        }
+        else{
+          var index = vm.orders.indexOf(order);
+          vm.orders.splice(index,1);
+        }
+      }, function error(res){
+        window.alert(res);
+      });
+  };
+
+  vm.showPrompt = function() {
+    $mdDialog.show({
+      controller : 'authenticationController',
+      templateUrl : 'views/extra/authDialogView.html'
+    });
   };
 });

@@ -2,12 +2,12 @@
 
 angular.module('menuApp').factory('httpService', function($http){
 	return {
-			backendAdress : 'http://localhost:5000',
+			backendAddress : 'http://localhost:5000',
 
 			getDish : function (dishId){
 		        return $http({
-		          url: this.backendAdress + '/api/getDish?dishId=' + dishId,
-		          method: 'GET',
+		          url: this.backendAddress + '/api/getDish?dishId=' + dishId,
+		          method: 'GET'
 		        })
 		        .then(function successCallback(res) {
 		            if (res.data.err){
@@ -31,8 +31,8 @@ angular.module('menuApp').factory('httpService', function($http){
 
 			getUserOrders : function(name){
 						return $http({
-								url: this.backendAdress + '/api/getUserOrders?name=' + name,
-								method: 'GET',
+								url: this.backendAddress + '/api/getUserOrders?name=' + name,
+								method: 'GET'
 								})
 						.then(function successCallback(res){
 						  if (res.data.err){
@@ -49,21 +49,21 @@ angular.module('menuApp').factory('httpService', function($http){
 			},
 
 			cancelOrder : function(orderID){
-			return $http({
-	            url: this.backendAdress + '/api/deleteOrder?id=' + orderID,
-	            method: 'POST'
-	          })
-					.then(function successCallback(res){
-			            return res.data;
-						},
-					function errorCallback(res){
-						return {msg: 'Cant get from backend ' + res.data};
-					});
-			},
+                return $http({
+                    url: this.backendAddress + '/api/deleteOrder?id=' + orderID,
+                    method: 'POST'
+                  })
+                        .then(function successCallback(res){
+                            return res.data;
+                            },
+                        function errorCallback(res){
+                            return {msg: 'Cant get from backend ' + res.data};
+                        });
+                },
 
 			sendOrder : function(orderObj){
 				return $http({
-		          url: this.backendAdress + '/api/postOrder',
+		          url: this.backendAddress + '/api/postOrder',
 		          method: 'POST',
 		          data : orderObj,
 		          headers: {
@@ -71,9 +71,34 @@ angular.module('menuApp').factory('httpService', function($http){
 	            }
 		        }).then(function successCallback(res){
 		            return (res);
-        }, function errorCallback(err){
-          return ('error sending to node: ' +err.data);
-        });
-			}
+                }, function errorCallback(err){
+                  return ('error sending to node: ' +err.data);
+                });
+			    },
+
+			sendRecaptcha : function(recaptchaResponse) {
+                return $http({
+                    url: this.backendAddress + '/api/recaptcha',
+                    method: 'POST',
+                    data: recaptchaResponse,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback(res) {
+                    return res;
+                });
+            },
+			sendAuthentication : function (authData){
+			    return $http({
+			        url: this.backendAddress + '/api/authentication',
+                    method: 'POST',
+                    data: authData,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }). then(function successCallback(){
+                   return 'message sent';
+                });
+            }
 	};
 });

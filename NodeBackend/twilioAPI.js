@@ -6,18 +6,38 @@ var TwilioApi = function(){
     this.client = new twilio.RestClient(this.testSid, this.testToken);
 };
 
-TwilioApi.prototype.sendMessage = function(authCode){
+TwilioApi.prototype.sendMessage = function(message, phoneNumber, fnOnComplete){
     this.client.messages.create({
-    body: authCode,
-    to: '+37060401484',
-    from: '+370 668 41460'
-}, function(err, message){
+        body: message,
+        to: phoneNumber,
+        from: '+370 668 41460'
+    }, function(err, message){
         if (err){
             console.log(err)
+            fnOnComplete('Failed to send: ' + err);
         } else {
             console.log(message.sid);
+            fnOnComplete(null);
         }
     });
 };
+
+TwilioApi.prototype.phoneLookup = function(phoneNumber){
+    var client = new twilio.LookupsClient(this.testSid, this.testToken);
+    client.phoneNumbers(phoneNumber).get({
+        type: 'carrier'
+    }, function (error, number)  {
+        var message = number ? number.national_format + ' is valid' : error;
+    if (error && error.status === 404) {
+        return false;
+    }
+    if (number.country_code != "LT"){
+        console.log("Užsakymai tik Lietuvoje");
+        return false;
+    }
+    console.log(message);
+    return true;
+    });
+}
 
 module.exports = new TwilioApi();

@@ -16,7 +16,8 @@ angular
     'ngResource',
     'ngRoute',
     'ngSanitize',
-    'ui.router'
+    'ui.router',
+    'vcRecaptcha'
   ])
   .config(function ($stateProvider, $urlRouterProvider, $sceDelegateProvider) {
     $urlRouterProvider.otherwise('/cart');
@@ -40,12 +41,6 @@ angular
         controller: 'historyController',
         controllerAs: 'vm'
       })
-      .state('root.order', {
-        url: '/order',
-        templateUrl :'views/orderView.html',
-        controller: 'ordersController',
-        controllerAs: 'vm'
-      });
     $sceDelegateProvider.resourceUrlWhitelist([
       'self',
       'http://localhost:5000/**'

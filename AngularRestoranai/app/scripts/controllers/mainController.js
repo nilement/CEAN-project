@@ -1,10 +1,11 @@
 'use strict'
 
-angular.module('menuApp').controller('mainController', function($scope, stateSharingService){
+angular.module('menuApp').controller('mainController', function($scope){
   var vm = this;
-  vm.orderCount = stateSharingService.orders.length;
+  vm.state = 'cart';
 
-  $scope.$watch(function(){ return stateSharingService.orders.length; }, function(){
-    vm.orderCount = stateSharingService.orders.length;
+  $scope.$on('stateChange', function(event, nextState){
+    vm.state = nextState;
   });
+
 });

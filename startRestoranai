@@ -1,0 +1,4 @@
+#!/bin/sh
+gnome-terminal -e "bash -c \"/home/matas/NodeAngular/CouchDB/bin/couchdb; exec bash\""
+gnome-terminal -e "bash -c \"node /home/matas/NodeAngular/NodeBackend/app.js; exec bash\""
+gnome-terminal -e "bash -c \"cd ~/NodeAngular/AngularRestoranai; gulp serve; exec bash\""

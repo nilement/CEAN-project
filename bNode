@@ -1,0 +1,5 @@
+cd AngularRestoranai; gulp build
+cd dist
+mv `ls | grep index` index-48d46f7176.html
+cd ../..
+cp -r AngularRestoranai/dist NodeBackend

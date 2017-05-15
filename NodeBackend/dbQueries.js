@@ -1,5 +1,4 @@
 var request = require('request');
-var twilioAPI = require('./twilioAPI.js');
 
 var baseDbUrl = 'localhost:5984';
 var databaseUrl = 'http://localhost:5984/cafe_example/';
@@ -91,7 +90,7 @@ Queries.prototype.getDish = function(req, fnOnComplete){
     return fnOnComplete({errorMsg: 'Invalid request!'});
   }
   var orderId = req.query.dishId.replace(/\D/g, '');
-  var path = databaseUrl + '_design/cafeData/_view/prices?key=' + orderId;
+  var path = databaseUrl + '_design/cafeData/_view/dishes_by_id?key=' + orderId;
   request({
     url: path,
     method: 'GET',
@@ -164,7 +163,7 @@ Queries.prototype.deleteOrder = function(req, fnOnComplete){
         headers:{
         'cookie':this.adminCookie
         }
-      }, (error, response, body)=>{ // OVERLAPING PARAMETERS!!!
+      }, (error, response, body)=>{ 
         if (error) {
            fnOnComplete({errorMsg: "Couldn't delete in DB. "}); return;
           } else if (response.statusCode === 401){
@@ -173,6 +172,19 @@ Queries.prototype.deleteOrder = function(req, fnOnComplete){
         fnOnComplete(null, 'Deleted order: ' + req.query.id);
       });
     });
+};
+
+Queries.prototype.placeAuthentication = function(phoneNumber, code, fnOnComplete){
+    request({
+        url: path,
+        method: 'POST',
+        headers: {
+            'cookie': this.adminCookie
+        }
+    }, (error, response, body) =>{
+
+    });
+    fnOnComplete();
 };
 
 module.exports = new Queries();
