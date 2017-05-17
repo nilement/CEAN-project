@@ -15,13 +15,6 @@ describe('connection toCouchDB', function(){
             done();
         });
     });
-    it('retrieves menu', function(done){
-        dbQueries.getMenu(null, function(dontcare, body){
-            var menuRows = JSON.parse(body).rows.length;
-            assert.isAtLeast(menuRows, 1);
-            done();
-        });
-    });
     it('posts order', function(done){
         dbQueries.postOrder(postRequest, function(errorMsg, message){
             uuid = message.substring(28,60);

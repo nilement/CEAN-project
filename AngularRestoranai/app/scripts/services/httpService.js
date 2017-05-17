@@ -110,7 +110,7 @@ angular.module('menuApp').factory('httpService', function($http){
 			            'Content-Type' : 'application/json'
                     }
                 }).then(function successCallback(res){
-                    return res
+                    return res;
                 });
             }
 	};

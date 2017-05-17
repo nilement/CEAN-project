@@ -107,6 +107,45 @@ app.post('/api/authentication', function (req, res) {
     authentication.verifyRecaptcha(recaptcha, recaptchaSuccess);
 });
 
-app.post('/api/phoneCode', function (req, res){
-    res.send({ err: 'Not yet implemented!' });
+app.post('/api/phoneCode', function(req, res){
+    let fnOnComplete = function(err, response){
+        if (err){
+            return res.send({err : err});
+        } else {
+            if (req.body.code === response.value.toString()){
+                res.send('Success!')
+            }
+            else {
+                res.send ({ err: 'Invalid code!2' });
+            }
+        }
+    };
+    if (req.body.code && req.body.code.length === 4){
+        dbQueries.retrieveAuth('860401484', fnOnComplete);
+    }
+    else{
+        res.send({ err: 'Invalid code!1' });
+    }
+});
+
+app.get('/testDB', function(req, res){
+    let fnOnComplete = function(err, response){
+        if (err){
+            return res.send({err : err});
+        } else {
+            res.send(response);
+        }
+    };
+    dbQueries.testAuthentication(fnOnComplete);
+});
+
+app.get('/testAuth', function(req, res){
+    let fnOnComplete = function(err, response){
+        if (err){
+            return res.send({err : err});
+        } else {
+            return res.send(response);
+        }
+    };
+    dbQueries.retrieveAuth('860401484', fnOnComplete);
 });

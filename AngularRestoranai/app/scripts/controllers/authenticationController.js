@@ -56,7 +56,11 @@ angular.module('menuApp').controller('authenticationController', function($scope
   };
 
   $scope.submitCode = function(){
-      httpService.sendCode($scope.phoneCode)
+      httpService.sendCode($scope.phoneCode).then(
+         function success(response){
+             console.log(response);
+         }
+      )
   };
 
   $scope.dataLog = function(){

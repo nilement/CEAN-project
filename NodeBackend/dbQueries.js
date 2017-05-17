@@ -1,5 +1,6 @@
 const request = require('request');
 const moment = require('moment');
+const auth = require('./authentication.js');
 
 //TODO: Move database view names as global constants
 
@@ -106,7 +107,7 @@ Queries.prototype.getDish = function(req, fnOnComplete){
     } else if (response.statusCode === 401){
           return this.cookieAuth(this.getDish, req, fnOnComplete);
           } else if (response.statusCode === 404){
-          fnOnComplete({errorMsg : 'Database not found'});
+          return fnOnComplete({errorMsg : 'Database not found'});
       }
       if (!error && response.statusCode === 200) {
           fnOnComplete(null, body);
@@ -177,7 +178,7 @@ Queries.prototype.deleteOrder = function(req, fnOnComplete){
     });
 };
 
-Queries.prototype.placeAuthentication = function(authObj,  fnOnComplete){
+Queries.prototype.placeAuthentication = function(authObj, fnOnComplete){
     if (!this.adminCookie){
         return this.cookieAuth(this.placeAuthentication.bind(this), authObj, fnOnComplete);
     }
@@ -192,7 +193,9 @@ Queries.prototype.placeAuthentication = function(authObj,  fnOnComplete){
         if (response.statusCode === 200){
             uuid = JSON.parse(body).uuids[0];
             authObj.status = 'unconfirmed';
-            authObj.date = moment().format();
+//            let date = moment().toObject();
+//            date.months += 1;
+            authObj.date = Date.now();
         }
         else {
             return fnOnComplete({errorMsg: 'Unhandled error retrieving UUID!'});
@@ -218,15 +221,85 @@ Queries.prototype.placeAuthentication = function(authObj,  fnOnComplete){
     });
 };
 
-/*Queries.prototype.retrieveAuth = function(phoneNumber, fnOnComplete){
+Queries.prototype.retrieveAuth = function(phoneNumber, fnOnComplete){
     if (!this.adminCookie){
-        return this.cookieAuth(this.retrieveAuth().bind(this), authObj, fnOnComplete);
+        return this.cookieAuth(this.retrieveAuth.bind(this), phoneNumber, fnOnComplete);
     }
     // here goes sanitisation
-    let path = databaseUrl + '_design/cafeData/_view/auth_codes_by_phone?key='+ '\"' + phoneNumber + '\"';
+    let now = Date.now();
+    let fiveMinAgo = now - 300000; // 5 * 60 * 1000
+    let path = 'http://localhost:5984/cafe_example/_design/cafeData/_view/auth_codes_by_phone?limit=1&reduce=false&inclusive_end=true&start_key=["' +
+        phoneNumber + '"%2C+'+ now.toString() +']&end_key=["' + phoneNumber + '"%2C+'+ fiveMinAgo.toString() +']&descending=true';
+    //console.log(path)
     request({
+        url: path,
+        method: 'GET'
+    }, (error, response, body) => {
+        //console.log(response.statusCode)
+        if (response.statusCode === 200){
+            let parsedBody = JSON.parse(body);
+            if (parsedBody.rows && parsedBody.rows.length === 1) {
+                return fnOnComplete(null, parsedBody.rows[0]);
+            }
+            else if (parsedBody.rows && parsedBody.rows.length === 0){
+                fnOnComplete({ err : "auth code expired" });
+            }
+            else {
+                fnOnComplete({ err : "try again" });
+            }
+        } else {
+            fnOnComplete({ err : error });
+        }
+    });
+};
 
-    })
-}*/
+Queries.prototype.testAuthentication = function(fnOnComplete){
+    if (!this.adminCookie){
+        return this.cookieAuth(this.testAuthentication.bind(this), fnOnComplete);
+    }
+
+    let authObj = {
+        phoneNumber : '860401484',//auth.generateCode().toString() + auth.generateCode().toString(),
+        code : auth.generateCode()
+    };
+    console.log(authObj.code);
+    request({
+        url: uuidUrl,
+        method: 'GET',
+        headers: {
+            cookie: this.adminCookie
+        }
+    }, (error, response, body) => {
+        let uuid;
+        if (response.statusCode === 200){
+            uuid = JSON.parse(body).uuids[0];
+            authObj.status = 'unconfirmed';
+//            let date = moment().toObject();
+//            date.months += 1;
+            authObj.date = Date.now();
+        }
+        else {
+            return fnOnComplete({errorMsg: 'Unhandled error retrieving UUID!'});
+        }
+        request({
+            url: databaseUrl + uuid,
+            method: 'PUT',
+            json : authObj,
+            headers: {
+                'cookie': this.adminCookie
+            }
+        }, (error, response, body) =>{
+            if ( response.statusCode === 201){
+                return fnOnComplete(null, 'Auth request placed', authObj);
+            }
+            if ( response.statusCode === 401 ){
+                return this.cookieAuth(this.testAuthentication.bind(this), fnOnComplete);
+            }
+            else {
+                fnOnComplete({errorMsg: "Couldn't place Auth in DB. "});
+            }
+        });
+    });
+};
 
 module.exports = new Queries();
