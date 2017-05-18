@@ -27,26 +27,25 @@ angular.module('menuApp').factory('httpService', function($http){
 		        function errorCallback(res){
 		            return {errMsg : 'Cant get from backend ' + res.data};
 		        });
-		  },
+		    },
 
 			getUserOrders : function(name){
-						return $http({
-								url: this.backendAddress + '/api/getUserOrders?name=' + name,
-								method: 'GET'
-								})
-						.then(function successCallback(res){
-						  if (res.data.err){
-						    window.alert('Error! Database is offline.');
-						    return [];
+            return $http({
+                    url: this.backendAddress + '/api/getUserOrders?name=' + name,
+                    method: 'GET'
+                    })
+            .then(function successCallback(res){
+              if (res.data.err){
+                window.alert('Error! Database is offline.');
+                return [];
+              } else {
+                            return res.data.rows;
               }
-              else{
-							    return res.data.rows;
-                }
-							},
-							function errorCallback(res){
-									return {msg: 'Backend is not responding ' + res.data};
-						});
-			},
+                        },
+                        function errorCallback(res){
+                                return {msg: 'Backend is not responding ' + res.data};
+                    });
+            },
 
 			cancelOrder : function(orderID){
                 return $http({
@@ -59,7 +58,7 @@ angular.module('menuApp').factory('httpService', function($http){
                         function errorCallback(res){
                             return {msg: 'Cant get from backend ' + res.data};
                         });
-                },
+            },
 
 			sendOrder : function(orderObj){
 				return $http({
@@ -73,19 +72,6 @@ angular.module('menuApp').factory('httpService', function($http){
 		            return (res);
                 }, function errorCallback(err){
                   return ('error sending to node: ' +err.data);
-                });
-			    },
-
-			sendRecaptcha : function(recaptchaResponse) {
-                return $http({
-                    url: this.backendAddress + '/api/recaptcha',
-                    method: 'POST',
-                    data: recaptchaResponse,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(function successCallback(res) {
-                    return res;
                 });
             },
 			sendAuthentication : function (authData){

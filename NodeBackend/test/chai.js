@@ -8,7 +8,6 @@ describe('connection toCouchDB', function(){
     var uuid = '';
     var rev = '';
     var postRequest = {body : {buyer:'test', dishes:{test:'test'}}};
-    var getRequest = {query: {name:'test'}};
     it('retrieves adminCookie', function(done){
         dbQueries.cookieAuth(function(){
             assert.equal(dbQueries.adminCookie.length, 59);
@@ -20,13 +19,6 @@ describe('connection toCouchDB', function(){
             uuid = message.substring(28,60);
             assert.equal(errorMsg, null);
             assert.equal(message, 'Succesfully posted order #: ' + uuid + ' to DB');
-            done();
-        });
-    });
-    it('retrieves that order', function(done){
-        dbQueries.getOrders(getRequest, function(errorMsg, body){
-            assert.equal(errorMsg, null);
-            assert.equal(JSON.parse(body).rows[0].value.test, 'test');
             done();
         });
     });
@@ -63,4 +55,10 @@ describe('connection toCouchDB', function(){
                 done();
            });
     });
+    /*it('adds authentication document to database', function(done){
+       request({
+
+       });
+    });*/
 });
+

@@ -53,7 +53,9 @@ angular.module('menuApp').controller('authenticationController', function($scope
       httpService.sendCode(orderObj).then(
          function success(response){
              console.log(response);
-         }
+         }, function fail(response){
+             console.log(response);
+          }
       )
   };
 

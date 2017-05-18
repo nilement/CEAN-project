@@ -80,7 +80,7 @@ app.post('/api/authentication', function (req, res) {
     };
      const recaptchaSuccess = function(err){
         if (err) {
-            res.send({ err : "Recaptcha fail!" });
+            res.status(400).send({ err : "Recaptcha fail!" });
         }
         const phoneNumber = req.body.phoneNumber;
         // phone lookup
@@ -99,14 +99,14 @@ app.post('/api/authentication', function (req, res) {
 app.post('/api/phoneCode', function(req, res){
     const fnOnOrderComplete = function(err, response){
         if (err){
-            res.send({ err: err });
+            res.status(400).send('Error');
         } else {
-            res.send(response);
+            res.status(201).send('Posted!');
         }
     };
     const fnOnCodeComplete = function(err, response){
         if (err){
-            return res.send({err : err});
+            return res.status(400).send({err : err});
         } else {
             if (req.body.phoneCode === response.value.toString()){
                 var orderDoc = { order: req.body.order, buyer: req.body.buyerName};

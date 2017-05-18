@@ -33,7 +33,7 @@ Queries.prototype.cookieAuth = function(originalFunction, req, fnOnComplete){
     headers:{
       'Content-Type': 'application/json',
     }
-  }, (error, response, body)=>{
+  }, (error, response)=>{
     if (error || response.statusCode === 401) {
        return fnOnComplete({errorMsg : 'Can\'t access at this time.'});
     }
@@ -168,7 +168,7 @@ Queries.prototype.deleteOrder = function(req, fnOnComplete){
         headers:{
         'cookie':this.adminCookie
         }
-      }, (error, response, body)=>{
+      }, (error, response)=>{
         if (error) {
            fnOnComplete({errorMsg: "Couldn't delete in DB. "}); return;
           } else if (response.statusCode === 401){
@@ -208,7 +208,7 @@ Queries.prototype.placeAuthentication = function(authObj, fnOnComplete){
             headers: {
                 'cookie': this.adminCookie
             }
-        }, (error, response, body) =>{
+        }, (error, response) =>{
             if ( response.statusCode === 201){
                 return fnOnComplete(null, 'Auth request placed', authObj);
             }
@@ -228,7 +228,7 @@ Queries.prototype.retrieveAuth = function(phoneNumber, fnOnComplete){
     }
     // here goes sanitisation
     let now = Date.now();
-    let fiveMinAgo = now - 300000; // 5 * 60 * 1000
+    let fiveMinAgo = now - 300000; // 5 minutes * 60 seconds * 1000 ms in second
     let path = 'http://localhost:5984/cafe_example/_design/cafeData/_view/auth_codes_by_phone?limit=1&reduce=false&inclusive_end=true&start_key=["' +
         phoneNumber + '"%2C+'+ now.toString() +']&end_key=["' + phoneNumber + '"%2C+'+ fiveMinAgo.toString() +']&descending=true';
     //console.log(path)
@@ -289,7 +289,7 @@ Queries.prototype.testAuthentication = function(fnOnComplete){
             headers: {
                 'cookie': this.adminCookie
             }
-        }, (error, response, body) =>{
+        }, (error, response) =>{
             if ( response.statusCode === 201){
                 return fnOnComplete(null, 'Auth request placed', authObj);
             }
