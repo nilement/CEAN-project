@@ -37,17 +37,6 @@ app.use('/api/getDish', function (req, res) {
   dbQueries.getDish(req, fnOnComplete);
 });
 
-app.post('/api/postOrder', function (req, res){
-  const fnOnComplete = function(err, response){
-      if (err){
-         res.send({ err: err });
-        } else {
-         res.send(response);
-        }
-    };
-dbQueries.postOrder(req, fnOnComplete);
-});
-
 app.use('/api/getUserOrders', function (req, res) {
   var fnOnComplete = function(err, response){
       if (err){
@@ -108,20 +97,29 @@ app.post('/api/authentication', function (req, res) {
 });
 
 app.post('/api/phoneCode', function(req, res){
-    let fnOnComplete = function(err, response){
+    const fnOnOrderComplete = function(err, response){
+        if (err){
+            res.send({ err: err });
+        } else {
+            res.send(response);
+        }
+    };
+    const fnOnCodeComplete = function(err, response){
         if (err){
             return res.send({err : err});
         } else {
-            if (req.body.code === response.value.toString()){
-                res.send('Success!')
+            if (req.body.phoneCode === response.value.toString()){
+                var orderDoc = { order: req.body.order, buyer: req.body.buyerName};
+                dbQueries.postOrder(orderDoc, fnOnOrderComplete);
             }
             else {
                 res.send ({ err: 'Invalid code!2' });
             }
         }
     };
-    if (req.body.code && req.body.code.length === 4){
-        dbQueries.retrieveAuth('860401484', fnOnComplete);
+    // TODO: Sanitise input!
+    if (req.body.phoneCode && req.body.phoneCode.length === 4){
+        dbQueries.retrieveAuth('860401484', fnOnCodeComplete);
     }
     else{
         res.send({ err: 'Invalid code!1' });

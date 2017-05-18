@@ -7,10 +7,10 @@ angular.module('menuApp').config(function($sceDelegateProvider) {
   ]);
 });
 
-angular.module('menuApp').controller('cartController', function(httpService, $mdDialog){
+angular.module('menuApp').controller('cartController', function(httpService, stateShareService, $mdDialog){
   var vm = this;
   vm.basketPrice = 0;
-  vm.basket = [];
+  vm.basket = stateShareService.order;
 
   vm.addDish = function(dishId){
     httpService.getDish(dishId)
@@ -25,7 +25,6 @@ angular.module('menuApp').controller('cartController', function(httpService, $md
                 item.count += 1;
                 vm.basketPrice = (parseFloat(vm.basketPrice) + parseFloat(response.value[1])).toFixed(2);
                 found = true;
-                return;
               }
             });
             if (!found){

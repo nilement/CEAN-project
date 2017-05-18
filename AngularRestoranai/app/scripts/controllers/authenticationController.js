@@ -1,11 +1,13 @@
 'use strict'
 
-angular.module('menuApp').controller('authenticationController', function($scope, $mdDialog, vcRecaptchaService, httpService){
+angular.module('menuApp').controller('authenticationController', function($scope, $mdDialog, vcRecaptchaService, httpService, stateShareService){
 
   $scope.siteKey = "6LdCmh0UAAAAAOCCmuEpb8C0edrrl6kgl3x7MBJ0";
 
   $scope.phoneNumber = null;
   $scope.phoneCode = null;
+  $scope.buyerName = null;
+
   $scope.response = null;
   $scope.widgetId = null;
 
@@ -34,19 +36,10 @@ angular.module('menuApp').controller('authenticationController', function($scope
     vcRecaptchaService.reload($scope.widgetId);
     $scope.response = null;
   };
-//TODO: Handle recaptcha fail
-  $scope.submitForm = function(){
-    let recaptcha = { response : $scope.response };
-    $scope.response = null;
-    httpService.sendRecaptcha(recaptcha).then(
-      function success(){
-        $mdDialog.hide();
-      }, function fail(){
 
-        });
-  };
 //TODO: Handle authRequest fail
-  $scope.submitAuth = function(){
+  $scope.requestCode = function(){
+      console.log(stateShareService.order);
       var data = { phoneNumber: $scope.phoneNumber, recaptcha: $scope.response};
       httpService.sendAuthentication(data).then(
           function success(response){
@@ -56,7 +49,8 @@ angular.module('menuApp').controller('authenticationController', function($scope
   };
 
   $scope.submitCode = function(){
-      httpService.sendCode($scope.phoneCode).then(
+      var orderObj = { phoneCode : $scope.phoneCode, order : stateShareService.order, buyerName : $scope.buyerName };
+      httpService.sendCode(orderObj).then(
          function success(response){
              console.log(response);
          }

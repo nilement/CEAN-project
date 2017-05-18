@@ -43,11 +43,11 @@ Queries.prototype.cookieAuth = function(originalFunction, req, fnOnComplete){
   );
 };
 
-Queries.prototype.postOrder = function(req, fnOnComplete){
+Queries.prototype.postOrder = function(order, fnOnComplete){
   if (!this.adminCookie){
-    return this.cookieAuth(this.postOrder.bind(this), req, fnOnComplete);
+    return this.cookieAuth(this.postOrder.bind(this), order, fnOnComplete);
   }
-    req.body.deleted = false;
+    order.deleted = false;
     request({
       // first retrieve a uuid for new order
       url: uuidUrl,
@@ -67,16 +67,17 @@ Queries.prototype.postOrder = function(req, fnOnComplete){
         // valid uuid received, now place the order
         url: databaseUrl + uuid,
         method: 'PUT',
-        json: req.body,
+        json: order,
         headers:{
         'cookie':this.adminCookie
           }
-        }, (error, response, body)=>{
+        }, (error, response)=>{
+          console.log(response.statusCode);
           if (error) {
              return fnOnComplete({errorMsg : 'Cant post to DB'});
           } else if (response.statusCode === 401){
             // authentication fail status code, database cookie has expired
-            return this.cookieAuth(this.postOrder, req, fnOnComplete);
+            return this.cookieAuth(this.postOrder, order, fnOnComplete);
           } else if (response.statusCode === 201){
             return fnOnComplete(null, 'Succesfully posted order #: ' + uuid + ' to DB');
           }

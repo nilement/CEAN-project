@@ -100,8 +100,7 @@ angular.module('menuApp').factory('httpService', function($http){
                    return res;
                 });
             },
-            sendCode : function(code, order){
-			    let orderObj = { code : code, order : order};
+            sendCode : function(orderObj){
 			    return $http({
 			        url: this.backendAddress + '/api/phoneCode',
                     method: 'POST',
