@@ -15,11 +15,9 @@ Authentication.prototype.verifyRecaptcha = function(captchaResponse, successFn){
     }, function (error, response, body) {
         let googleResponse = JSON.parse(body);
         if (error) {
-                console.log('Error!: ' + error);
                 successFn('Something is wrong!');
         } else {
             if (googleResponse.success === true){
-                console.log('User is human!');
                 successFn(null);
             }
             else{

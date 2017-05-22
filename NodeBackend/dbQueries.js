@@ -111,6 +111,10 @@ Queries.prototype.getDish = function(req, fnOnComplete){
           return fnOnComplete({errorMsg : 'Database not found'});
       }
       if (!error && response.statusCode === 200) {
+          let parsedBody = JSON.parse(body);
+          if (parsedBody.rows.length < 1){
+              fnOnComplete({ errorMsg : 'Dish does not exist', responseCode:400 });
+          }
           fnOnComplete(null, body);
           }
       });

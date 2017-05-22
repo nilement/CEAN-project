@@ -10,23 +10,10 @@ angular.module('menuApp').factory('httpService', function($http){
 		          method: 'GET'
 		        })
 		        .then(function successCallback(res) {
-		            if (res.data.err){
-		              return {errMsg: res.data.err.errorMsg};
-		            }
-		            else{
-		              if (res.data.rows) {
-                    if (res.data.rows.length == 0) {
-                      return {errMsg: "Invalid request id!"};
-                    }
-                    else {
-                      return res.data.rows[0];
-                    }
-                  }
-		            }
-		          },
-		        function errorCallback(res){
-		            return {errMsg : 'Cant get from backend ' + res.data};
-		        });
+                    return res.data;
+                }, function failCallback(err) {
+		            return err;
+		          });
 		    },
 
 			getUserOrders : function(name){
@@ -69,9 +56,9 @@ angular.module('menuApp').factory('httpService', function($http){
 		            'Content-Type': 'application/json'
 	            }
 		        }).then(function successCallback(res){
-		            return (res);
+		            return res;
                 }, function errorCallback(err){
-                  return ('error sending to node: ' +err.data);
+                  return err;
                 });
             },
 			sendAuthentication : function (authData){
@@ -82,8 +69,10 @@ angular.module('menuApp').factory('httpService', function($http){
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }). then(function successCallback(res){
+                }).then(function successCallback(res){
                    return res;
+                }, function failCallback(err){
+                    return err;
                 });
             },
             sendCode : function(orderObj){
@@ -96,6 +85,8 @@ angular.module('menuApp').factory('httpService', function($http){
                     }
                 }).then(function successCallback(res){
                     return res;
+                }, function failCallback(err){
+                    return err;
                 });
             }
 	};

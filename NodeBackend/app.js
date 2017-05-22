@@ -1,5 +1,8 @@
+'use strict';
+
 const express = require('express');
 const app = express();
+const helmet = require('helmet');
 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -29,7 +32,7 @@ app.use('/menu', function (req, res)  {
 app.use('/api/getDish', function (req, res) {
   const fnOnComplete = function(err, response){
     if (err){
-      res.status(err.responseCode).send({ err: err });
+      res.status(err.responseCode).send({ err: err.errorMsg });
     } else{
       res.status(200).send(response);
     }
@@ -82,7 +85,7 @@ app.post('/api/authentication', function (req, res) {
         if (err) {
             res.status(400).send({ err : "Recaptcha fail!" });
         }
-        const phoneNumber = req.body.phoneNumber;
+        const phoneNumber = req.body.phoneNumber.replace(/\W/g,'');
         // phone lookup
     //        if (!twilioAPI.phoneLookup(phoneNumber)){
     //            res.send({ err : "Invalid phone number!" });
@@ -90,7 +93,6 @@ app.post('/api/authentication', function (req, res) {
         const code = authentication.generateCode();
         const authObj = { phoneNumber : phoneNumber, code: code};
         dbQueries.placeAuthentication(authObj, fnOnDBComplete);
-    //      twilioAPI.sendMessage(code, phoneNumber, fnOnSendComplete);
     };
     let recaptcha = req.body.recaptcha;
     authentication.verifyRecaptcha(recaptcha, recaptchaSuccess);
