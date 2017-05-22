@@ -8,6 +8,11 @@ describe('connection toCouchDB', function(){
     var uuid = '';
     var rev = '';
     var postRequest = {body : {buyer:'test', dishes:{test:'test'}}};
+    it('retrieves a dish from database', function(done){
+       dbQueries.getDish(1, function(err, resp){
+           assert.equal(resp.body.item==='Braske')
+       });
+    });
     it('retrieves adminCookie', function(done){
         dbQueries.cookieAuth(function(){
             assert.equal(dbQueries.adminCookie.length, 59);

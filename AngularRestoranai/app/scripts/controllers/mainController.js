@@ -1,11 +1,17 @@
-'use strict'
+'use strict';
 
-angular.module('menuApp').controller('mainController', function($scope){
-  var vm = this;
-  vm.state = 'cart';
+angular.module('menuApp').controller('mainController', function($rootScope, $scope, stateShareService, $state){
+    var vm = this;
+    vm.state = 'cart';
 
-  $scope.$on('stateChange', function(event, nextState){
-    vm.state = nextState;
-  });
+    /*$rootScope.$on('$stateChangeStart', function (event, toState) {
+        if (toState.name === 'root.history' && stateShareService.historyRetrieved){
+            event.preventDefault();
+            $state.go('root.retrievedHistory')
+        }
+    });*/
 
+    $scope.$on('stateChange', function(event, nextState){
+        vm.state = nextState;
+    });
 });

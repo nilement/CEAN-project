@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('menuApp').controller('historyController', function(httpService, $cookies){
+angular.module('menuApp').controller('historyController', function(httpService, stateShareService){
   var vm = this;
   vm.history = [{date: '2017-04-15 15:33', orderId: '3345', price: 34.25, buyer: 'Matas', dishes:
     [{name:'Burokas', price:6.66, count:5, itemId: 12, imageLink: 'images/fish.png'},
@@ -10,6 +10,10 @@ angular.module('menuApp').controller('historyController', function(httpService, 
 
   vm.noOrdersFound = true;
   vm.buyerName = '';
+  vm.historyRetrieved = stateShareService.historyRetrieved;
+
+  vm.authPhone = '';
+  vm.authPassword = '';
 
   vm.toggleOrder = function(index){
     for (var i = 0; i < vm.history.length; i++){
@@ -20,7 +24,12 @@ angular.module('menuApp').controller('historyController', function(httpService, 
         vm.history[i].expanded = !(vm.history[i].expanded);
       }
     }
-  }
+  };
+
+  vm.setRetrieved = function(){
+    vm.historyRetrieved = !vm.historyRetrieved;
+    stateShareService.historyRetrieved = vm.historyRetrieved;
+  };
 
   vm.getUserOrders = function(name){
     vm.noOrdersFound = false;

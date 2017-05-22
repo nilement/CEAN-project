@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('menuApp').controller('authenticationController', function($scope, $mdDialog, vcRecaptchaService, httpService, stateShareService){
+angular.module('menuApp').controller('cartAuthController', function($scope, $mdDialog, vcRecaptchaService, httpService, stateShareService){
 
   $scope.siteKey = "6LdCmh0UAAAAAOCCmuEpb8C0edrrl6kgl3x7MBJ0";
 

@@ -29,16 +29,16 @@ app.use('/menu', function (req, res)  {
 app.use('/api/getDish', function (req, res) {
   const fnOnComplete = function(err, response){
     if (err){
-      res.send({ err: err });
+      res.status(err.responseCode).send({ err: err });
     } else{
-      res.send(response);
+      res.status(200).send(response);
     }
   };
   dbQueries.getDish(req, fnOnComplete);
 });
 
 app.use('/api/getUserOrders', function (req, res) {
-  var fnOnComplete = function(err, response){
+  const fnOnComplete = function(err, response){
       if (err){
          return res.send({err : err});
       } else {
@@ -49,13 +49,13 @@ app.use('/api/getUserOrders', function (req, res) {
 });
 
 app.use('/api/deleteOrder', function (req,res) {
-  var fnOnComplete = function(err, response){
+    const fnOnComplete = function(err, response){
       if (err){
          return res.send({ err: err});
         } else {
            res.send('Deleted order: ' + req.query.id);
         }
-  };
+    };
   dbQueries.deleteOrder(req,fnOnComplete);
 });
 
@@ -78,19 +78,19 @@ app.post('/api/authentication', function (req, res) {
             res.send('Code sent!');
         }
     };
-     const recaptchaSuccess = function(err){
+    const recaptchaSuccess = function(err){
         if (err) {
             res.status(400).send({ err : "Recaptcha fail!" });
         }
         const phoneNumber = req.body.phoneNumber;
         // phone lookup
-//        if (!twilioAPI.phoneLookup(phoneNumber)){
-//            res.send({ err : "Invalid phone number!" });
-//        }
+    //        if (!twilioAPI.phoneLookup(phoneNumber)){
+    //            res.send({ err : "Invalid phone number!" });
+    //        }
         const code = authentication.generateCode();
         const authObj = { phoneNumber : phoneNumber, code: code};
         dbQueries.placeAuthentication(authObj, fnOnDBComplete);
-//      twilioAPI.sendMessage(code, phoneNumber, fnOnSendComplete);
+    //      twilioAPI.sendMessage(code, phoneNumber, fnOnSendComplete);
     };
     let recaptcha = req.body.recaptcha;
     authentication.verifyRecaptcha(recaptcha, recaptchaSuccess);
@@ -109,7 +109,7 @@ app.post('/api/phoneCode', function(req, res){
             return res.status(400).send({err : err});
         } else {
             if (req.body.phoneCode === response.value.toString()){
-                var orderDoc = { order: req.body.order, buyer: req.body.buyerName};
+                let orderDoc = { order: req.body.order, buyer: req.body.buyerName};
                 dbQueries.postOrder(orderDoc, fnOnOrderComplete);
             }
             else {
@@ -127,7 +127,7 @@ app.post('/api/phoneCode', function(req, res){
 });
 
 app.get('/testDB', function(req, res){
-    let fnOnComplete = function(err, response){
+    const fnOnComplete = function(err, response){
         if (err){
             return res.send({err : err});
         } else {
@@ -138,11 +138,11 @@ app.get('/testDB', function(req, res){
 });
 
 app.get('/testAuth', function(req, res){
-    let fnOnComplete = function(err, response){
+    const fnOnComplete = function(err, response){
         if (err){
             return res.send({err : err});
         } else {
-            return res.send(response);
+            return res.status(200).send(response);
         }
     };
     dbQueries.retrieveAuth('860401484', fnOnComplete);

@@ -106,8 +106,8 @@ angular.module('menuApp').controller('cartController', function(httpService, sta
 
   vm.showPrompt = function() {
     $mdDialog.show({
-      controller : 'authenticationController',
-      templateUrl : 'views/extra/authDialogView.html'
+      controller : 'cartAuthController',
+      templateUrl : 'views/extra/cartAuthDialogView.html'
     });
   };
 });

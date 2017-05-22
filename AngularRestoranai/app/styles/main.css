@@ -125,3 +125,11 @@ body {
   overflow:hidden;
   height:100%;
 }
+
+.pass-forgot {
+    width: 30%;
+    float: left;
+    text-align: left;
+    color: rgba(0, 0, 0, 0.4);
+    font-size: 16px;
+}

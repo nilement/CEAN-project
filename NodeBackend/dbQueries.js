@@ -92,7 +92,7 @@ Queries.prototype.getDish = function(req, fnOnComplete){
     return this.cookieAuth(this.getDish.bind(this), req, fnOnComplete);
   }
   if (req.query.dishId === undefined){
-    return fnOnComplete({errorMsg: 'Invalid request!'});
+    return fnOnComplete({errorMsg: 'Invalid request!', responseCode:400});
   }
   let orderId = req.query.dishId.replace(/\D/g, '');
   let path = databaseUrl + '_design/cafeData/_view/dishes_by_id?key=' + orderId;
@@ -104,7 +104,7 @@ Queries.prototype.getDish = function(req, fnOnComplete){
         }
     }, (error, response, body)=>{
       if (error) {
-         return fnOnComplete({errorMsg : 'Database is down, can\'t get Dish'});
+         return fnOnComplete({errorMsg : 'Database is down, can\'t get Dish', responseCode:500});
     } else if (response.statusCode === 401){
           return this.cookieAuth(this.getDish, req, fnOnComplete);
           } else if (response.statusCode === 404){
@@ -131,7 +131,7 @@ Queries.prototype.getOrders = function(req, fnOnComplete){
         }
   }, (error, response, body)=>{
     if (error){
-      return fnOnComplete({errorMsg: 'User history can\'t be retrieved.'});
+      return fnOnComplete({errorMsg: 'User history can\'t be retrieved.', responseCode:500});
     } else if (response.statusCode === 401){
           return this.cookieAuth(this.getOrders.bind(this), req, fnOnComplete);
         }
