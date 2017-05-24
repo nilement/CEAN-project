@@ -47,7 +47,7 @@ app.use('/api/retrieveHistory', function (req, res) {
       } else {
          res.send(response);
       }
-  }
+  };
   dbQueries.getOrders(req, fnOnComplete);
 });
 
@@ -74,11 +74,7 @@ app.post('/api/requestAuthentication', function (req, res) {
         if (err) {
             res.status(400).send({ err : "Recaptcha fail!" });
         }
-        const phoneNumber = req.body.phoneNumber.replace(/\W/g,'');
-        // phone lookup
-    //        if (!twilioAPI.phoneLookup(phoneNumber)){
-    //            res.send({ err : "Invalid phone number!" });
-    //        }
+        const phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
         const code = authentication.generateCode();
         const authObj = { phoneNumber : phoneNumber, code: code};
         dbQueries.placeAuthentication(authObj, fnOnDBComplete);
@@ -90,9 +86,9 @@ app.post('/api/requestAuthentication', function (req, res) {
 app.post('/api/sendOrder', function(req, res){
     const fnOnOrderComplete = function(err, response){
         if (err){
-            res.status(400).send('Error');
+            res.status(400).send({err : 'Error'});
         } else {
-            res.status(201).send('Posted!');
+            res.status(201).send(response);
         }
     };
     const fnOnCodeComplete = function(err, response){
@@ -110,10 +106,11 @@ app.post('/api/sendOrder', function(req, res){
     };
     // TODO: Sanitise input!
     if (req.body.phoneCode && req.body.phoneCode.length === 4){
-        dbQueries.retrieveAuth('860401484', fnOnCodeComplete);
+        let phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
+        dbQueries.retrieveAuthentication(phoneNumber, fnOnCodeComplete);
     }
     else{
-        res.send({ err: 'Invalid code!1' });
+        res.status(400).send({ err: 'Invalid code!1' });
     }
 });
 

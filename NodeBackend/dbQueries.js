@@ -200,7 +200,6 @@ Queries.prototype.retrieveAuthentication = function(phoneNumber, fnOnComplete){
         url: path,
         method: 'GET'
     }, (error, response, body) => {
-        //console.log(response.statusCode)
         if (response.statusCode === 200){
             let parsedBody = JSON.parse(body);
             if (parsedBody.rows && parsedBody.rows.length === 1) {
@@ -239,8 +238,6 @@ Queries.prototype.testAuthentication = function(fnOnComplete){
         if (response.statusCode === 200){
             uuid = JSON.parse(body).uuids[0];
             authObj.status = 'unconfirmed';
-//            let date = moment().toObject();
-//            date.months += 1;
             authObj.date = Date.now();
         }
         else {
