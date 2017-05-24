@@ -41,12 +41,6 @@ angular
         controller: 'historyController',
         controllerAs: 'vm'
       })
-      /*.state('root.historyDisplay', {
-        url: '/historyDisplay',
-        templateUrl: 'views/historyView.html',
-        controller: 'historyController',
-        controllerAs: 'vm'
-        })*/
     $sceDelegateProvider.resourceUrlWhitelist([
       'self',
       'http://localhost:5000/**'

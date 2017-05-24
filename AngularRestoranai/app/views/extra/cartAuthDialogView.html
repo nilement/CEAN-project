@@ -44,16 +44,12 @@
         <label>Jūsų kodas</label>
         <input class="ng-pristine ng-valid md-autofocus md-input ng-empty ng-touched" ng-model="phoneCode">
       </md-input-container>
-        <md-input-container md-no-float=""  class="md-prompt-input-container ng-scope md-input-has-placeholder md-default-theme" style="">
-            <label>Užsakovo vardas</label>
-            <input class="ng-pristine ng-valid md-autofocus md-input ng-empty ng-touched" ng-model="buyerName">
-        </md-input-container>
     </md-dialog-content>
     <md-dialog-actions>
-      <md-button class="md-primary md-cancel-button md-button ng-scope md-default-theme md-ink-ripple" ng-click="closeDialog()">
+      <md-button class="md-primary md-cancel-button md-button ng-scope md-default-theme md-ink-ripple" ng-click="changeState()">
         Grįžti
       </md-button>
-      <md-button type="submit" class="md-primary md-cancel-button md-button ng-scope md-default-theme md-ink-ripple" ng-click="submitCode()">
+      <md-button type="submit" class="md-primary md-cancel-button md-button ng-scope md-default-theme md-ink-ripple" ng-click="sendOrder()">
         Patvirtinti
       </md-button>
     </md-dialog-actions>

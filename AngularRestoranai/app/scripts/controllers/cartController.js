@@ -52,36 +52,7 @@ angular.module('menuApp').controller('cartController', function(httpService, sta
     vm.basket.splice(index,1);
   };
 
-  vm.getMenu = function(){
-    if (vm.menuRetrieved === 2){
-      window.alert('Menu already retrieved!');
-      return;
-    }
-    else if (vm.menuRetrieved === 1){
-      window.alert('Menu is being retrieved!');
-      return;
-    }
-    vm.menuRetrieved = 1;
-    httpService.getMenu()
-      .then(function success(response){
-        if (response){
-          if (response.errMsg){
-            vm.menuRetrieved = 0;
-            window.alert(response.errMsg);
-          }
-          else if (response.data){
-            vm.menu = response.data;
-            vm.menuRetrieved = 2;
-          }
-        }
-        else{
-          vm.menuRetrieved = 0;
-          window.alert('Uncaught error!');
-        }
-      });
-  };
-
-  vm.finishOrder = function(){
+  vm.sendOrder = function(){
     if (vm.basket.length == 0){
       window.alert('Cart is empty!');
       return;

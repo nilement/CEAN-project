@@ -40,7 +40,7 @@ app.use('/api/getDish', function (req, res) {
   dbQueries.getDish(req, fnOnComplete);
 });
 
-app.use('/api/getUserOrders', function (req, res) {
+app.use('/api/retrieveHistory', function (req, res) {
   const fnOnComplete = function(err, response){
       if (err){
          return res.send({err : err});
@@ -51,18 +51,7 @@ app.use('/api/getUserOrders', function (req, res) {
   dbQueries.getOrders(req, fnOnComplete);
 });
 
-app.use('/api/deleteOrder', function (req,res) {
-    const fnOnComplete = function(err, response){
-      if (err){
-         return res.send({ err: err});
-        } else {
-           res.send('Deleted order: ' + req.query.id);
-        }
-    };
-  dbQueries.deleteOrder(req,fnOnComplete);
-});
-
-app.post('/api/authentication', function (req, res) {
+app.post('/api/requestAuthentication', function (req, res) {
     const fnOnDBComplete = function(err, success, authObj){
         if (success){
             twilioAPI.sendMessage(authObj.code, authObj.phoneNumber, fnOnSendComplete);
@@ -98,7 +87,7 @@ app.post('/api/authentication', function (req, res) {
     authentication.verifyRecaptcha(recaptcha, recaptchaSuccess);
 });
 
-app.post('/api/phoneCode', function(req, res){
+app.post('/api/sendOrder', function(req, res){
     const fnOnOrderComplete = function(err, response){
         if (err){
             res.status(400).send('Error');
@@ -126,6 +115,10 @@ app.post('/api/phoneCode', function(req, res){
     else{
         res.send({ err: 'Invalid code!1' });
     }
+});
+
+app.post('/api/resetPassword', function(req, res){
+    res.status(400).send({ err: 'Not yet implemented!'});
 });
 
 app.get('/testDB', function(req, res){

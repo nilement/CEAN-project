@@ -226,7 +226,7 @@ Queries.prototype.placeAuthentication = function(authObj, fnOnComplete){
     });
 };
 
-Queries.prototype.retrieveAuth = function(phoneNumber, fnOnComplete){
+Queries.prototype.retrieveAuthentication = function(phoneNumber, fnOnComplete){
     if (!this.adminCookie){
         return this.cookieAuth(this.retrieveAuth.bind(this), phoneNumber, fnOnComplete);
     }

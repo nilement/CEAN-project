@@ -41,16 +41,16 @@ angular.module('menuApp').controller('cartAuthController', function($scope, $mdD
   $scope.requestCode = function(){
       console.log(stateShareService.order);
       var data = { phoneNumber: $scope.phoneNumber, recaptcha: $scope.response};
-      httpService.sendAuthentication(data).then(
+      httpService.requestAuthentication(data).then(
           function success(response){
               console.log(response);
               $scope.changeState();
           });
   };
 
-  $scope.submitCode = function(){
+  $scope.sendOrder = function(){
       var orderObj = { phoneCode : $scope.phoneCode, order : stateShareService.order, buyerName : $scope.buyerName };
-      httpService.sendCode(orderObj).then(
+      httpService.sendOrder(orderObj).then(
          function success(response){
              console.log(response);
          }, function fail(response){
