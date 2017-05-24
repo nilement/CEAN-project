@@ -143,46 +143,6 @@ Queries.prototype.getOrders = function(req, fnOnComplete){
   });
 };
 
-Queries.prototype.deleteOrder = function(req, fnOnComplete){
-  if (!this.adminCookie){
-    return this.cookieAuth(this.deleteOrder.bind(this), req, fnOnComplete);
-  }
-  // order id must consist only of digits and letters
-  let orderId = req.query.id.replace(/\W/g,'');
-  let path = databaseUrl + orderId;
-  request({
-    // to set deleted on order it must be created anew with changed property
-    url: path,
-    method: 'GET',
-    headers:{
-        'cookie':this.adminCookie
-        }
-    }, (error, response, body)=>{
-      if (error) {
-      return fnOnComplete({errorMsg: "Can't find order in DB. "});
-    } else if (response.statusCode === 401){
-          return this.cookieAuth(this.deleteOrder.bind(this), req, fnOnComplete);
-        }
-      let orderFromDb = JSON.parse(body); // rebuild order
-      orderFromDb.deleted = true;
-      request({  // rewrite the order
-        url: path,
-        method: 'PUT',
-        json : orderFromDb,
-        headers:{
-        'cookie':this.adminCookie
-        }
-      }, (error, response)=>{
-        if (error) {
-           fnOnComplete({errorMsg: "Couldn't delete in DB. "}); return;
-          } else if (response.statusCode === 401){
-              return this.cookieAuth(this.deleteOrder.bind(this), req, fnOnComplete);
-        }
-        fnOnComplete(null, 'Deleted order: ' + req.query.id);
-      });
-    });
-};
-
 Queries.prototype.placeAuthentication = function(authObj, fnOnComplete){
     if (!this.adminCookie){
         return this.cookieAuth(this.placeAuthentication.bind(this), authObj, fnOnComplete);
