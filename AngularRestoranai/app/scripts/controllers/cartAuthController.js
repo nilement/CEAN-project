@@ -6,7 +6,6 @@ angular.module('menuApp').controller('cartAuthController', function($scope, $mdD
 
   $scope.phoneNumber = null;
   $scope.phoneCode = null;
-  $scope.buyerName = null;
 
   $scope.response = null;
   $scope.widgetId = null;
@@ -46,10 +45,10 @@ angular.module('menuApp').controller('cartAuthController', function($scope, $mdD
   };
 
   $scope.sendOrder = function(){
-      var orderObj = { phoneCode : $scope.phoneCode, order : stateShareService.order, buyerName : $scope.buyerName };
+      var orderObj = { phoneCode : $scope.phoneCode, order : stateShareService.order, phoneNumber : $scope.phoneNumber };
       httpService.sendOrder(orderObj).then(
          function (response){
-             console.log(response);
+             alert(response);
          });
   };
 

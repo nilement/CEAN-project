@@ -141,7 +141,7 @@ Queries.prototype.retrieveAuthentication = function(phoneNumber, fnOnComplete){
     let path = 'http://localhost:5984/cafe_example/_design/cafeData/_view/auth_codes_by_phone?limit=1&reduce=false&inclusive_end=true&start_key=["' +
         phoneNumber + '"%2C+'+ now.toString() +']&end_key=["' + phoneNumber + '"%2C+'+ fiveMinAgo.toString() +']&descending=true';
     if (!this.adminCookie){
-        return this.cookieAuth(this.retrieveAuth.bind(this), phoneNumber, fnOnComplete);
+        return this.cookieAuth(this.retrieveAuthentication.bind(this), phoneNumber, fnOnComplete);
     }
     // here goes sanitisation
     request({

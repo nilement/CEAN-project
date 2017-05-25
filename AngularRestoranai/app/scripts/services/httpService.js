@@ -31,7 +31,7 @@ angular.module('menuApp').factory('httpService', function($http){
             },
 			sendOrder : function(orderObj){
 				return $http({
-		          url: this.backendAddress + '/api/testOrder',
+		          url: this.backendAddress + '/api/sendOrder',
 		          method: 'POST',
 		          data : orderObj,
 		          headers: {

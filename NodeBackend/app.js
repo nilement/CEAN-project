@@ -119,7 +119,7 @@ app.post('/api/sendOrder', function(req, res){
             return res.status(400).send({err : err});
         } else {
             if (req.body.phoneCode === response.value.toString()){
-                let orderDoc = { order: req.body.order, buyer: req.body.buyerName};
+                let orderDoc = validation.createOrderObj(req.body);
                 dbQueries.sendOrder(orderDoc, fnOnOrderComplete);
             }
             else {
