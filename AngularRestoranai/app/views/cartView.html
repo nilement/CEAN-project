@@ -1,7 +1,7 @@
 <md-content flex id="mainContent">
   <!-- Basket -->
     <md-toolbar class="md-toolbar-tools">
-      <h1>Užsakymas</h1>
+      <h1>Užsakymas</h1><button ng-click="vm.sendOrder()">Send order</button>
     </md-toolbar>
     <md-content layout="column" ng-repeat="choice in vm.basket">
       <cart-item-directive imageLink="{{choice.imageLink}}" title="{{choice.name}}" count="{{choice.count}}"

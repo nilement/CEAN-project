@@ -6,13 +6,16 @@ const helmet = require('helmet');
 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+
 const dbQueries = require('./dbQueries.js');
 const twilioAPI = require('./twilioAPI.js');
 const authentication = require('./authentication.js');
+const validation = require('./validation');
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(helmet());
 
 app.use(function (req, res, next)  {
   res.header('Access-Control-Allow-Origin', '*');
@@ -43,12 +46,19 @@ app.use('/api/getDish', function (req, res) {
 app.use('/api/retrieveHistory', function (req, res) {
   const fnOnComplete = function(err, response){
       if (err){
-         return res.send({err : err});
+         return res.status(400).send({err : err.errMsg });
       } else {
-         res.send(response);
+         res.status(200).send(response);
       }
   };
-  dbQueries.getOrders(req, fnOnComplete);
+  const phoneNumber = req.body.phoneNumber.toString().replace(/[^0-9]+/, '');
+  if (validation.validatePhone(phoneNumber)) {
+      dbQueries.retrieveUser(phoneNumber, fnOnComplete);
+      //dbQueries.retrieveHistory(phoneNumber, fnOnComplete);
+  }
+  else{
+      fnOnComplete({ errMsg : 'Invalid phone number'});
+  }
 });
 
 app.post('/api/requestAuthentication', function (req, res) {
@@ -97,16 +107,18 @@ app.post('/api/sendOrder', function(req, res){
         } else {
             if (req.body.phoneCode === response.value.toString()){
                 let orderDoc = { order: req.body.order, buyer: req.body.buyerName};
-                dbQueries.postOrder(orderDoc, fnOnOrderComplete);
+                dbQueries.sendOrder(orderDoc, fnOnOrderComplete);
             }
             else {
                 res.send ({ err: 'Invalid code!2' });
             }
         }
     };
-    // TODO: Sanitise input!
     if (req.body.phoneCode && req.body.phoneCode.length === 4){
         let phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
+        if (!validation.validatePhone(phoneNumber)){
+            res.status(400).send({ err: 'Invalid phone number! '});
+        }
         dbQueries.retrieveAuthentication(phoneNumber, fnOnCodeComplete);
     }
     else{
@@ -127,6 +139,18 @@ app.get('/testDB', function(req, res){
         }
     };
     dbQueries.testAuthentication(fnOnComplete);
+});
+
+app.post('/api/testOrder', function(req, res){
+    //let orderObj = validation.createOrderObj(req.body);
+    const fnOnComplete = function(err, response){
+        if (err){
+            return res.send({err : err});
+        } else {
+            res.send(response);
+        }
+    };
+    dbQueries.sendOrder(req.body, fnOnComplete);
 });
 
 app.get('/testAuth', function(req, res){

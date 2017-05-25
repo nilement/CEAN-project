@@ -43,47 +43,47 @@ Queries.prototype.cookieAuth = function(originalFunction, req, fnOnComplete){
   );
 };
 
-Queries.prototype.postOrder = function(order, fnOnComplete){
+Queries.prototype.sendOrder = function(order, fnOnComplete){
   if (!this.adminCookie){
-    return this.cookieAuth(this.postOrder.bind(this), order, fnOnComplete);
+    return this.cookieAuth(this.sendOrder.bind(this), order, fnOnComplete);
   }
-    order.deleted = false;
+  request({
+    // first retrieve a uuid for new order
+    url: uuidUrl,
+    method: 'GET',
+    headers:{
+      cookie:this.adminCookie
+      }
+  }, (error, response, body)=>{
+    if (error){
+      return fnOnComplete({ errorMsg : 'Cant retrieve UUID' });
+    }
+    if (response.statusCode !== 200){
+      return fnOnComplete({errorMsg : 'Unhandled error retrieving UUID!'});
+    }
+    let uuid = JSON.parse(body).uuids[0];
+    order.date = Date.now();
     request({
-      // first retrieve a uuid for new order
-      url: uuidUrl,
-      method: 'GET',
+      // valid uuid received, now place the order
+      url: databaseUrl + uuid,
+      method: 'PUT',
+      json: order,
       headers:{
-        cookie:this.adminCookie
+      'cookie':this.adminCookie
         }
-    }, (error, response, body)=>{
-      if (error){
-        return fnOnComplete({ errorMsg : 'Cant retrieve UUID' });
-      }
-      if (response.statusCode !== 200){
-        return fnOnComplete({errorMsg : 'Unhandled error retrieving UUID!'});
-      }
-      let uuid = JSON.parse(body).uuids[0];
-      request({
-        // valid uuid received, now place the order
-        url: databaseUrl + uuid,
-        method: 'PUT',
-        json: order,
-        headers:{
-        'cookie':this.adminCookie
-          }
-        }, (error, response)=>{
-          console.log(response.statusCode);
-          if (error) {
-             return fnOnComplete({errorMsg : 'Cant post to DB'});
-          } else if (response.statusCode === 401){
-            // authentication fail status code, database cookie has expired
-            return this.cookieAuth(this.postOrder, order, fnOnComplete);
-          } else if (response.statusCode === 201){
-            return fnOnComplete(null, 'Succesfully posted order #: ' + uuid + ' to DB');
-          }
-          return fnOnComplete({errorMsg : 'Unhandled error!'});
-        });
-  });
+      }, (error, response)=>{
+        console.log(response.statusCode);
+        if (error) {
+           return fnOnComplete({errorMsg : 'Cant post to DB'});
+        } else if (response.statusCode === 401){
+          // authentication fail status code, database cookie has expired
+          return this.cookieAuth(this.sendOrder, order, fnOnComplete);
+        } else if (response.statusCode === 201){
+          return fnOnComplete(null, 'Succesfully posted order #: ' + uuid + ' to DB');
+        }
+        return fnOnComplete({errorMsg : 'Unhandled error!'});
+      });
+    });
 };
 
 
@@ -118,29 +118,6 @@ Queries.prototype.getDish = function(req, fnOnComplete){
           fnOnComplete(null, body);
           }
       });
-};
-
-Queries.prototype.getOrders = function(req, fnOnComplete){
-  if (!this.adminCookie){
-    return this.cookieAuth(this.getOrders.bind(this), req, fnOnComplete);
-  }
-  // order name must consist only of alphabet characters
-  let orderName = req.query.name.replace(/\W/g,'');
-  let path =  databaseUrl + '_design/cafeData/_view/dishes_by_id?key='+ '\"' + orderName + '\"';
-  request({
-    url: path,
-    method: 'GET',
-    headers:{
-        'cookie':this.adminCookie
-        }
-  }, (error, response, body)=>{
-    if (error){
-      return fnOnComplete({errorMsg: 'User history can\'t be retrieved.', responseCode:500});
-    } else if (response.statusCode === 401){
-          return this.cookieAuth(this.getOrders.bind(this), req, fnOnComplete);
-        }
-    fnOnComplete(null, body);
-  });
 };
 
 Queries.prototype.placeAuthentication = function(authObj, fnOnComplete){
@@ -221,12 +198,10 @@ Queries.prototype.testAuthentication = function(fnOnComplete){
     if (!this.adminCookie){
         return this.cookieAuth(this.testAuthentication.bind(this), fnOnComplete);
     }
-
     let authObj = {
         phoneNumber : '860401484',//auth.generateCode().toString() + auth.generateCode().toString(),
         code : auth.generateCode()
     };
-    console.log(authObj.code);
     request({
         url: uuidUrl,
         method: 'GET',
@@ -263,5 +238,47 @@ Queries.prototype.testAuthentication = function(fnOnComplete){
         });
     });
 };
+
+Queries.prototype.retrieveHistory = function(phoneNumber, fnOnComplete){
+    if (!this.adminCookie){
+        return this.cookieAuth(this.retrieveHistory.bind(this), phoneNumber, fnOnComplete);
+    }
+    let path = ('_design/cafeData/_view/history?keys=["' + phoneNumber + '"]');
+    request({
+        url: databaseUrl + path,
+        method: 'GET',
+        headers: {
+            cookie: this.adminCookie
+            }
+    }, (error, response) => {
+        if (response.statusCode === 200){
+            return fnOnComplete(null, response.body);
+        }
+        else {
+            fnOnComplete({ errorMsg: 'Service not available'});
+        }
+    });
+};
+
+Queries.prototype.retrieveUser = function(phoneNumber, fnOnComplete){
+    if (!this.adminCookie){
+        return this.cookieAuth(this.retrieveUser.bind(this), phoneNumber, fnOnComplete);
+    }
+    let path = ('_design/cafeData/_view/users_by_phone?keys=["' + phoneNumber + '"]');
+    request({
+        url: databaseUrl + path,
+        method: 'GET',
+        headers: {
+            cookie: this.adminCookie
+        }
+    }, (error, response) => {
+        if (response.statusCode === 200){
+            return fnOnComplete(null, response.body);
+        }
+        else {
+            fnOnComplete({ errorMsg: 'Service not available'});
+        }
+    });
+}
 
 module.exports = new Queries();

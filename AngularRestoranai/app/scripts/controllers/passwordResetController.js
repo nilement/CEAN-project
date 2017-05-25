@@ -29,11 +29,9 @@ angular.module('menuApp').controller('passwordResetController', function($scope,
 
 //TODO: Handle authRequest fail
     $scope.requestReset = function(){
-        console.log(stateShareService.order);
         var data = { phoneNumber: $scope.phoneNumber, recaptcha: $scope.response};
-        httpService.sendAuthentication(data).then(
+        httpService.resetPassword(data).then(
             function success(response){
-                console.log(response);
                 $scope.changeState();
             });
     };

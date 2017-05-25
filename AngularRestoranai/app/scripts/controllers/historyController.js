@@ -37,7 +37,7 @@ angular.module('menuApp').controller('historyController', function(httpService, 
     vm.noOrdersFound = false;
     vm.history = [];
     httpService.getUserOrders(name)
-      .then(function success(response){
+      .then(function (response){
         if (response.msg){
           window.alert(response.msg);
           return;

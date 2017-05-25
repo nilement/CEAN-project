@@ -9,15 +9,19 @@ angular.module('menuApp').factory('httpService', function($http){
 		          method: 'GET'
 		        })
 		        .then(function successCallback(res) {
-                    return res.data;
+                    return res;
                 }, function failCallback(err) {
 		            return err;
 		          });
 		    },
-			retrieveHistory : function(name){
+			retrieveHistory : function(authObj){
             return $http({
-                    url: this.backendAddress + '/api/retrieveHistory?name=' + name,
-                    method: 'GET'
+                    url: this.backendAddress + '/api/retrieveHistory',
+                    method: 'POST',
+                    data: authObj,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                     })
             .then(function successCallback(res){
                     return res;
@@ -27,7 +31,7 @@ angular.module('menuApp').factory('httpService', function($http){
             },
 			sendOrder : function(orderObj){
 				return $http({
-		          url: this.backendAddress + '/api/sendOrder',
+		          url: this.backendAddress + '/api/testOrder',
 		          method: 'POST',
 		          data : orderObj,
 		          headers: {

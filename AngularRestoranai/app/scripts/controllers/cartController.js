@@ -14,12 +14,13 @@ angular.module('menuApp').controller('cartController', function(httpService, sta
 
   vm.addDish = function(dishId){
     httpService.getDish(dishId)
-      .then(function success(response){
-          if (response.errMsg){
-            window.alert(response.errMsg);
+      .then(function (response){
+          if (response.data.err){
+            window.alert(response.data.err);
           }
           else{
-            var dish = response.rows[0];
+            var data = response.data.rows;
+            var dish = data[0];
             var found = false;
             vm.basket.forEach(function(item) {
               if (item.itemId == dish.key) {
@@ -59,20 +60,18 @@ angular.module('menuApp').controller('cartController', function(httpService, sta
     }
     var foods = [];
     for (var i = 0; i < vm.basket.length; i++){
-      foods.push({ count : vm.basket[i].count, dish : vm.basket[i].itemId });
+      foods.push({ count : vm.basket[i].count, dish : vm.basket[i].itemId, price : vm.basket[i].price });
     }
-    var orderObj=angular.toJson({dishes: foods, buyer: vm.buyerName, total: vm.basketPrice });
+    var orderObj=angular.toJson({dishes: foods, total: vm.basketPrice, phoneNumber: '860401485' });
     httpService.sendOrder(orderObj)
-      .then(function success(res){
+      .then(function (res){
         if (res.data.err){
           window.alert("Can't find DB.");
         }
         else{
-          var index = vm.orders.indexOf(order);
-          vm.orders.splice(index,1);
+          vm.basketPrice = 0;
+          vm.basket.splice(0, vm.basket.length);
         }
-      }, function error(res){
-        window.alert(res);
       });
   };
 
