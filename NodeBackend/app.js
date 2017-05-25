@@ -43,18 +43,35 @@ app.use('/api/getDish', function (req, res) {
   dbQueries.getDish(req, fnOnComplete);
 });
 
-app.use('/api/retrieveHistory', function (req, res) {
+app.post('/api/retrieveHistory', function (req, res) {
+  const fnOnPasswordComplete = function(err, response){
+      if (err){
+          return res.status(401).send({ err : err.errMsg });
+      } else {
+          let parsedResponse = JSON.parse(response);
+          let pass = parsedResponse.rows[0].value[0];
+          console.log("retrieved pass: " );
+          console.log(pass);
+          console.log("user pass: " );
+          console.log(req.body.password);
+          if ( pass === req.body.password){
+              dbQueries.retrieveHistory(phoneNumber, fnOnComplete);
+          } else {
+              return res.status(201).send({ err : 'Incorrect password!' });
+          }
+      }
+  }
   const fnOnComplete = function(err, response){
       if (err){
          return res.status(400).send({err : err.errMsg });
       } else {
-         res.status(200).send(response);
+         let historyObj = validation.createHistoryObj(response);
+          return res.status(200).send(historyObj);
       }
   };
   const phoneNumber = req.body.phoneNumber.toString().replace(/[^0-9]+/, '');
   if (validation.validatePhone(phoneNumber)) {
-      dbQueries.retrieveUser(phoneNumber, fnOnComplete);
-      //dbQueries.retrieveHistory(phoneNumber, fnOnComplete);
+      dbQueries.retrieveUser(phoneNumber, fnOnPasswordComplete);
   }
   else{
       fnOnComplete({ errMsg : 'Invalid phone number'});
@@ -77,12 +94,12 @@ app.post('/api/requestAuthentication', function (req, res) {
         if (err){
             return res.send({ err: err });
         } else {
-            res.send('Code sent!');
+            return res.send('Code sent!');
         }
     };
     const recaptchaSuccess = function(err){
         if (err) {
-            res.status(400).send({ err : "Recaptcha fail!" });
+            return res.status(400).send({ err : "Recaptcha fail!" });
         }
         const phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
         const code = authentication.generateCode();
@@ -110,14 +127,14 @@ app.post('/api/sendOrder', function(req, res){
                 dbQueries.sendOrder(orderDoc, fnOnOrderComplete);
             }
             else {
-                res.send ({ err: 'Invalid code!2' });
+                return res.send ({ err: 'Invalid code!2' });
             }
         }
     };
     if (req.body.phoneCode && req.body.phoneCode.length === 4){
         let phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
         if (!validation.validatePhone(phoneNumber)){
-            res.status(400).send({ err: 'Invalid phone number! '});
+            return res.status(400).send({ err: 'Invalid phone number! '});
         }
         dbQueries.retrieveAuthentication(phoneNumber, fnOnCodeComplete);
     }
@@ -127,7 +144,39 @@ app.post('/api/sendOrder', function(req, res){
 });
 
 app.post('/api/resetPassword', function(req, res){
-    res.status(400).send({ err: 'Not yet implemented!'});
+    const fnOnRecaptchaComplete = function(err){
+        if (err){
+            return res.status(400).send({ err : err.errMsg });
+        }
+        return dbQueries.retrieveUser(req.body.phoneNumber, fnOnUserRetrieval);
+    };
+    const fnOnUserRetrieval = function(err, userObj){
+        if (err){
+            return res.status(400).send({ err : err.errMsg });
+        }
+        userObj = JSON.parse(userObj);
+        newPassword = validation.generatePassword();
+        let resetObj = { id: userObj.rows[0].id, _rev: userObj.rows[0].value[1], password: newPassword, phoneNumber : req.body.phoneNumber };
+        return dbQueries.replaceUserDocument(resetObj, fnOnReplaceComplete);
+    };
+    const fnOnReplaceComplete = function(err){
+        if (err){
+            return res.status(400).send({ err : err.errMsg });
+        }
+        let message = 'Jūsų naujas slaptažodis yra: ' + newPassword;
+        return twilioAPI.sendMessage(message, req.body.phoneNumber, fnOnMessageSent);
+    };
+    const fnOnMessageSent = function(err, response){
+        if (err){
+            return res.status(400).send({ err : err });
+        }
+        else{
+            return res.status(200).send({ response: response });
+        }
+    };
+    let recaptcha = req.body.recaptcha;
+    let newPassword = '';
+    authentication.verifyRecaptcha(recaptcha, fnOnRecaptchaComplete);
 });
 
 app.get('/testDB', function(req, res){
@@ -162,4 +211,9 @@ app.get('/testAuth', function(req, res){
         }
     };
     dbQueries.retrieveAuth('860401484', fnOnComplete);
+});
+
+app.get('/testPass', function(req, res){
+   let password = validation.generatePassword();
+   res.send(password);
 });

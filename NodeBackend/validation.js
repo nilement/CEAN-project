@@ -1,6 +1,10 @@
+const crypto = require('crypto');
+
 const Validation = function(){
 
 };
+
+const passwordCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 Validation.prototype.validatePhone = function(phoneNumber){
     if (phoneNumber.length === 11){
@@ -27,6 +31,28 @@ Validation.prototype.createOrderObj = function(requestBody){
         orderObj.dishes.push(dish);
     }
     return orderObj;
+};
+
+Validation.prototype.createHistoryObj = function(response){
+    let parsedResponse = JSON.parse(response);
+    let historyObj = { orders : [] };
+    parsedResponse.rows.forEach((n) => {
+        let order = {};
+        order.dishes = n.value[0];
+        order.date = new Date(n.value[1]);
+        order.price = n.value[2];
+        historyObj.orders.push(order);
+    });
+    return historyObj;
+};
+
+Validation.prototype.generatePassword = function(){
+    const buf = crypto.randomBytes(8);
+    let password = '';
+    buf.forEach((char)=>{
+        password += passwordCharacters.charAt(char % passwordCharacters.length);
+    });
+    return password;
 };
 
 module.exports = new Validation();

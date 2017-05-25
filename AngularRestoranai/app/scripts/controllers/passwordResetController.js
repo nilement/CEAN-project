@@ -28,11 +28,11 @@ angular.module('menuApp').controller('passwordResetController', function($scope,
     };
 
 //TODO: Handle authRequest fail
-    $scope.requestReset = function(){
+    $scope.resetPassword = function(){
         var data = { phoneNumber: $scope.phoneNumber, recaptcha: $scope.response};
         httpService.resetPassword(data).then(
             function success(response){
-                $scope.changeState();
+                $scope.closeDialog();
             });
     };
 

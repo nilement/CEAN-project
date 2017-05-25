@@ -11,11 +11,11 @@ TwilioApi.prototype.sendMessage = function(message, phoneNumber, fnOnComplete){
         body: message,
         to: phoneNumber,
         from: '+370 668 41460'
-    }, function(err, message){
+    }, function(err){
         if (err){
             fnOnComplete('Failed to send: ' + err);
         } else {
-            fnOnComplete(null);
+            fnOnComplete(null, 'Išsiųsta!');
         }
     });
 };

@@ -14,7 +14,7 @@ angular.module('menuApp').controller('historyController', function(httpService, 
   vm.buyerName = '';
   vm.historyRetrieved = stateShareService.historyRetrieved;
 
-  vm.authPhone = '';
+  vm.authPhoneNumber = '';
   vm.authPassword = '';
 
   vm.toggleOrder = function(index){
@@ -33,23 +33,19 @@ angular.module('menuApp').controller('historyController', function(httpService, 
     stateShareService.historyRetrieved = vm.historyRetrieved;
   };
 
-  vm.retrieveHistory = function(name){
-    vm.noOrdersFound = false;
+  vm.retrieveHistory = function(){
     vm.history = [];
-    httpService.getUserOrders(name)
+    var authObj = { phoneNumber : vm.authPhoneNumber, password : vm.authPassword };
+    httpService.retrieveHistory(authObj)
       .then(function (response){
-        if (response.msg){
-          window.alert(response.msg);
+        if (response.data.err){
+          window.alert(response.data.err);
           return;
         }
-        response.forEach(function (n) {
-          n.expanded = false;
-          vm.history.push(n);
-        });
-        if (vm.history.length === 0){
-          vm.noOrdersFound = true;
-        }
-      });
+        vm.history = response.data.orders;
+        vm.setRetrieved();
+        console.log(vm.history);
+    });
   };
 
   vm.showPrompt = function() {

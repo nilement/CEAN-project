@@ -279,6 +279,27 @@ Queries.prototype.retrieveUser = function(phoneNumber, fnOnComplete){
             fnOnComplete({ errorMsg: 'Service not available'});
         }
     });
+};
+
+Queries.prototype.replaceUserDocument = function(userObj, fnOnComplete){
+    if (!this.adminCookie) {
+        return this.cookieAuth(this.resetPassword.bind(this), userObj, fnOnComplete);
+    }
+    request({
+        url: databaseUrl + userObj.id,
+        method: 'PUT',
+        json: userObj,
+        headers:{
+            'cookie':this.adminCookie
+        }
+    }, (error, response) => {
+        if (response.statusCode === 201){
+            return fnOnComplete(null, 'OK');
+        }
+        else {
+            fnOnComplete({ errorMsg: 'Service not available'});
+        }
+    });
 }
 
 module.exports = new Queries();
