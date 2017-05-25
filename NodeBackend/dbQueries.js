@@ -14,15 +14,7 @@ const Queries = function(){
   this.adminCookie = '';
 };
 
-// called when cookie is not found
-// params:
-// func - function that called for authentication check
-// req - initial HTTP request
-// fnOnComplete - final completion function that calls HTTP response
-// sends local admin data to DB for cookie retrieval
-// originalFunction = function(req, fnOnComplete)
 Queries.prototype.cookieAuth = function(originalFunction, req, fnOnComplete){
-  // URL for CouchDB admin cookie retrieval
   const path = 'http://' + this.adminName + ':' + this.adminPassword + '@' + baseDbUrl + '/_session';
   const auth = {name: this.adminName, password : this.adminPassword};
   request({
@@ -44,59 +36,42 @@ Queries.prototype.cookieAuth = function(originalFunction, req, fnOnComplete){
 };
 
 Queries.prototype.sendOrder = function(order, fnOnComplete){
-  if (!this.adminCookie){
-    return this.cookieAuth(this.sendOrder.bind(this), order, fnOnComplete);
-  }
-  request({
-    // first retrieve a uuid for new order
-    url: uuidUrl,
-    method: 'GET',
-    headers:{
-      cookie:this.adminCookie
-      }
-  }, (error, response, body)=>{
-    if (error){
-      return fnOnComplete({ errorMsg : 'Cant retrieve UUID' });
+    if (!this.adminCookie){
+        return this.cookieAuth(this.sendOrder.bind(this), order, fnOnComplete);
     }
-    if (response.statusCode !== 200){
-      return fnOnComplete({errorMsg : 'Unhandled error retrieving UUID!'});
-    }
-    let uuid = JSON.parse(body).uuids[0];
     order.date = Date.now();
     request({
-      // valid uuid received, now place the order
-      url: databaseUrl + uuid,
-      method: 'PUT',
-      json: order,
-      headers:{
-      'cookie':this.adminCookie
+        url: databaseUrl,
+        method: 'POST',
+        json: order,
+        headers:{
+        'cookie':this.adminCookie
         }
-      }, (error, response)=>{
-        console.log(response.statusCode);
-        if (error) {
+    }, (error, response)=>{
+    if (error) {
            return fnOnComplete({errorMsg : 'Cant post to DB'});
-        } else if (response.statusCode === 401){
-          // authentication fail status code, database cookie has expired
+    } else if (response.statusCode === 401){
+      // authentication fail status code, database cookie has expired
           return this.cookieAuth(this.sendOrder, order, fnOnComplete);
-        } else if (response.statusCode === 201){
+    } else if (201 === response.statusCode){
           return fnOnComplete(null, 'Succesfully posted order #: ' + uuid + ' to DB');
-        }
-        return fnOnComplete({errorMsg : 'Unhandled error!'});
-      });
+    }
+    return fnOnComplete({errorMsg : 'Unhandled error!'});
     });
 };
 
 
 Queries.prototype.getDish = function(req, fnOnComplete){
-  if (!this.adminCookie){
-    return this.cookieAuth(this.getDish.bind(this), req, fnOnComplete);
-  }
-  if (req.query.dishId === undefined){
-    return fnOnComplete({errorMsg: 'Invalid request!', responseCode:400});
-  }
-  let orderId = req.query.dishId.replace(/\D/g, '');
-  let path = databaseUrl + '_design/cafeData/_view/dishes_by_id?key=' + orderId;
-  request({
+    let orderId = req.query.dishId.replace(/\D/g, '');
+    let path = databaseUrl + '_design/cafeData/_view/dishes_by_id?key=' + orderId;
+    if (!this.adminCookie){
+        return this.cookieAuth(this.getDish.bind(this), req, fnOnComplete);
+    }
+    if (req.query.dishId === undefined){
+        return fnOnComplete({errorMsg: 'Invalid request!', responseCode:400});
+    }
+
+    request({
     url: path,
     method: 'GET',
     headers:{
@@ -164,15 +139,14 @@ Queries.prototype.placeAuthentication = function(authObj, fnOnComplete){
 };
 
 Queries.prototype.retrieveAuthentication = function(phoneNumber, fnOnComplete){
-    if (!this.adminCookie){
-        return this.cookieAuth(this.retrieveAuth.bind(this), phoneNumber, fnOnComplete);
-    }
-    // here goes sanitisation
     let now = Date.now();
     let fiveMinAgo = now - 300000; // 5 minutes * 60 seconds * 1000 ms in second
     let path = 'http://localhost:5984/cafe_example/_design/cafeData/_view/auth_codes_by_phone?limit=1&reduce=false&inclusive_end=true&start_key=["' +
         phoneNumber + '"%2C+'+ now.toString() +']&end_key=["' + phoneNumber + '"%2C+'+ fiveMinAgo.toString() +']&descending=true';
-    //console.log(path)
+    if (!this.adminCookie){
+        return this.cookieAuth(this.retrieveAuth.bind(this), phoneNumber, fnOnComplete);
+    }
+    // here goes sanitisation
     request({
         url: path,
         method: 'GET'
@@ -195,13 +169,13 @@ Queries.prototype.retrieveAuthentication = function(phoneNumber, fnOnComplete){
 };
 
 Queries.prototype.testAuthentication = function(fnOnComplete){
+    let authObj = {
+        phoneNumber : '860401484',
+        code : auth.generateCode()
+    };
     if (!this.adminCookie){
         return this.cookieAuth(this.testAuthentication.bind(this), fnOnComplete);
     }
-    let authObj = {
-        phoneNumber : '860401484',//auth.generateCode().toString() + auth.generateCode().toString(),
-        code : auth.generateCode()
-    };
     request({
         url: uuidUrl,
         method: 'GET',
@@ -240,10 +214,10 @@ Queries.prototype.testAuthentication = function(fnOnComplete){
 };
 
 Queries.prototype.retrieveHistory = function(phoneNumber, fnOnComplete){
+    let path = ('_design/cafeData/_view/history?keys=["' + phoneNumber + '"]');
     if (!this.adminCookie){
         return this.cookieAuth(this.retrieveHistory.bind(this), phoneNumber, fnOnComplete);
     }
-    let path = ('_design/cafeData/_view/history?keys=["' + phoneNumber + '"]');
     request({
         url: databaseUrl + path,
         method: 'GET',
@@ -261,10 +235,10 @@ Queries.prototype.retrieveHistory = function(phoneNumber, fnOnComplete){
 };
 
 Queries.prototype.retrieveUser = function(phoneNumber, fnOnComplete){
+    let path = ('_design/cafeData/_view/users_by_phone?keys=["' + phoneNumber + '"]');
     if (!this.adminCookie){
         return this.cookieAuth(this.retrieveUser.bind(this), phoneNumber, fnOnComplete);
     }
-    let path = ('_design/cafeData/_view/users_by_phone?keys=["' + phoneNumber + '"]');
     request({
         url: databaseUrl + path,
         method: 'GET',

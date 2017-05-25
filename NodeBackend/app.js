@@ -50,10 +50,6 @@ app.post('/api/retrieveHistory', function (req, res) {
       } else {
           let parsedResponse = JSON.parse(response);
           let pass = parsedResponse.rows[0].value[0];
-          console.log("retrieved pass: " );
-          console.log(pass);
-          console.log("user pass: " );
-          console.log(req.body.password);
           if ( pass === req.body.password){
               dbQueries.retrieveHistory(phoneNumber, fnOnComplete);
           } else {
