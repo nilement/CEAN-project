@@ -70,7 +70,6 @@ Queries.prototype.getDish = function(req, fnOnComplete){
     if (req.query.dishId === undefined){
         return fnOnComplete({errorMsg: 'Invalid request!', responseCode:400});
     }
-
     request({
     url: path,
     method: 'GET',
@@ -110,8 +109,6 @@ Queries.prototype.placeAuthentication = function(authObj, fnOnComplete){
         if (response.statusCode === 200){
             uuid = JSON.parse(body).uuids[0];
             authObj.status = 'unconfirmed';
-//            let date = moment().toObject();
-//            date.months += 1;
             authObj.date = Date.now();
         }
         else {
@@ -119,7 +116,7 @@ Queries.prototype.placeAuthentication = function(authObj, fnOnComplete){
         }
         request({
             url: databaseUrl + uuid,
-            method: 'PUT',
+            method: 'POST',
             json : authObj,
             headers: {
                 'cookie': this.adminCookie
