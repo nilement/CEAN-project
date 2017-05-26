@@ -48,7 +48,7 @@ angular.module('menuApp').controller('cartAuthController', function($scope, $mdD
       var orderObj = { phoneCode : $scope.phoneCode, order : stateShareService.order, phoneNumber : $scope.phoneNumber };
       httpService.sendOrder(orderObj).then(
          function (response){
-             alert(response);
+             alert(response.data);
          });
   };
 

@@ -49,12 +49,12 @@ Queries.prototype.sendOrder = function(order, fnOnComplete){
         }
     }, (error, response)=>{
     if (error) {
-           return fnOnComplete({errorMsg : 'Cant post to DB'});
+        return fnOnComplete({errorMsg : 'Cant post to DB'});
     } else if (response.statusCode === 401){
       // authentication fail status code, database cookie has expired
-          return this.cookieAuth(this.sendOrder, order, fnOnComplete);
+        return this.cookieAuth(this.sendOrder, order, fnOnComplete);
     } else if (201 === response.statusCode){
-          return fnOnComplete(null, 'Succesfully posted order #: ' + uuid + ' to DB');
+        return fnOnComplete(null, 'Succesfully posted order to DB');
     }
     return fnOnComplete({errorMsg : 'Unhandled error!'});
     });
@@ -98,40 +98,25 @@ Queries.prototype.placeAuthentication = function(authObj, fnOnComplete){
     if (!this.adminCookie){
         return this.cookieAuth(this.placeAuthentication.bind(this), authObj, fnOnComplete);
     }
+    authObj.status = 'unconfirmed';
+    authObj.date = Date.now();
     request({
-        url: uuidUrl,
-        method: 'GET',
+        url: databaseUrl,
+        method: 'POST',
+        json : authObj,
         headers: {
-            cookie: this.adminCookie
+            'cookie': this.adminCookie
         }
-    }, (error, response, body) => {
-        let uuid;
-        if (response.statusCode === 200){
-            uuid = JSON.parse(body).uuids[0];
-            authObj.status = 'unconfirmed';
-            authObj.date = Date.now();
+    }, (error, response) =>{
+        if ( response.statusCode === 201){
+            return fnOnComplete(null, 'Auth request placed', authObj);
+        }
+        if ( response.statusCode === 401 ){
+            return this.cookieAuth(this.placeAuthentication.bind(this), authObj, fnOnComplete);
         }
         else {
-            return fnOnComplete({errorMsg: 'Unhandled error retrieving UUID!'});
+            fnOnComplete({errorMsg: "Couldn't place Auth in DB. "});
         }
-        request({
-            url: databaseUrl + uuid,
-            method: 'POST',
-            json : authObj,
-            headers: {
-                'cookie': this.adminCookie
-            }
-        }, (error, response) =>{
-            if ( response.statusCode === 201){
-                return fnOnComplete(null, 'Auth request placed', authObj);
-            }
-            if ( response.statusCode === 401 ){
-                return this.cookieAuth(this.placeAuthentication.bind(this), authObj, fnOnComplete);
-            }
-            else {
-                fnOnComplete({errorMsg: "Couldn't place Auth in DB. "});
-            }
-        });
     });
 };
 
@@ -162,51 +147,6 @@ Queries.prototype.retrieveAuthentication = function(phoneNumber, fnOnComplete){
         } else {
             fnOnComplete({ err : error });
         }
-    });
-};
-
-Queries.prototype.testAuthentication = function(fnOnComplete){
-    let authObj = {
-        phoneNumber : '860401484',
-        code : auth.generateCode()
-    };
-    if (!this.adminCookie){
-        return this.cookieAuth(this.testAuthentication.bind(this), fnOnComplete);
-    }
-    request({
-        url: uuidUrl,
-        method: 'GET',
-        headers: {
-            cookie: this.adminCookie
-        }
-    }, (error, response, body) => {
-        let uuid;
-        if (response.statusCode === 200){
-            uuid = JSON.parse(body).uuids[0];
-            authObj.status = 'unconfirmed';
-            authObj.date = Date.now();
-        }
-        else {
-            return fnOnComplete({errorMsg: 'Unhandled error retrieving UUID!'});
-        }
-        request({
-            url: databaseUrl + uuid,
-            method: 'PUT',
-            json : authObj,
-            headers: {
-                'cookie': this.adminCookie
-            }
-        }, (error, response) =>{
-            if ( response.statusCode === 201){
-                return fnOnComplete(null, 'Auth request placed', authObj);
-            }
-            if ( response.statusCode === 401 ){
-                return this.cookieAuth(this.testAuthentication.bind(this), fnOnComplete);
-            }
-            else {
-                fnOnComplete({errorMsg: "Couldn't place Auth in DB. "});
-            }
-        });
     });
 };
 

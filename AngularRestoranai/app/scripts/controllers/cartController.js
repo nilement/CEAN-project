@@ -23,7 +23,7 @@ angular.module('menuApp').controller('cartController', function(httpService, sta
             var dish = data[0];
             var found = false;
             vm.basket.forEach(function(item) {
-              if (item.itemId == dish.key) {
+              if (item.itemID == dish.key) {
                 item.count += 1;
                 vm.basketPrice = (parseFloat(vm.basketPrice) + parseFloat(dish.value[1])).toFixed(2);
                 found = true;
@@ -31,7 +31,7 @@ angular.module('menuApp').controller('cartController', function(httpService, sta
             });
             if (!found){
               vm.basketPrice = (parseFloat(vm.basketPrice) + parseFloat(dish.value[1])).toFixed(2);
-              vm.basket.push({name:dish.value[0], itemId:dish.key, price: dish.value[1], count: 1});
+              vm.basket.push({name:dish.value[0], itemID:dish.key, price: dish.value[1], count: 1});
             }
           }
       });
@@ -60,7 +60,7 @@ angular.module('menuApp').controller('cartController', function(httpService, sta
     }
     var foods = [];
     for (var i = 0; i < vm.basket.length; i++){
-      foods.push({ count : vm.basket[i].count, dish : vm.basket[i].itemId, price : vm.basket[i].price });
+      foods.push({ count : vm.basket[i].count, dish : vm.basket[i].itemID, price : vm.basket[i].price });
     }
     var orderObj=angular.toJson({dishes: foods, total: vm.basketPrice, phoneNumber: '860401485' });
     httpService.sendOrder(orderObj)

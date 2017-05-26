@@ -43,8 +43,10 @@
                 <label>Slaptažodis</label>
                 <input type="password" ng-model="vm.authPassword" required=""/>
             </md-input-container>
-            <md-button ng-click="vm.showPrompt($event)" class="md-raised md-primary">Nežinau slaptažodžio</md-button>
-            <md-button ng-click="vm.retrieveHistory()" class="md-raised md-primary">&nbsp Ieškoti istorijos &nbsp</md-button>
+            <md-input-container layout="column">
+                <md-button ng-click="vm.retrieveHistory()" class="md-raised md-primary">&nbspPateikti užsakymus &nbsp</md-button>
+                <md-button ng-click="vm.showPrompt($event)" class="md-primary">Nežinau slaptažodžio</md-button>
+            <md-input-container class="md-block">
         </md-card-content>
     </md-card>
 </md-content>
