@@ -2,7 +2,7 @@ angular.module('menuApp').factory('stateShareService', function() {
     return {
         order: [],
         historyRetrieved: false,
-        phoneNumber: '',
-        password: ''
+        history : {},
+        expandLatest : false
     }
 });

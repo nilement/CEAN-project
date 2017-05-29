@@ -41,6 +41,7 @@ angular.module('menuApp').controller('cartController', function(httpService, sta
     var index = vm.basket.indexOf(dish);
     vm.basket[index].count -= 1;
     if (vm.basket[index].count === 0){
+
       vm.basket.splice(index,1);
     }
     vm.basketPrice = (parseFloat(vm.basketPrice) - parseFloat(dish.price)).toFixed(2);
@@ -54,13 +55,9 @@ angular.module('menuApp').controller('cartController', function(httpService, sta
   };
 
   vm.sendOrder = function(){
-    if (vm.basket.length == 0){
-      window.alert('Cart is empty!');
-      return;
-    }
     var foods = [];
     for (var i = 0; i < vm.basket.length; i++){
-      foods.push({ count : vm.basket[i].count, dish : vm.basket[i].itemID, price : vm.basket[i].price });
+      foods.push({ count : vm.basket[i].count, dish : vm.basket[i].itemID, price : vm.basket[i].price, name : vm.basket[i].name });
     }
     var orderObj=angular.toJson({dishes: foods, total: vm.basketPrice, phoneNumber: '860401485' });
     httpService.sendOrder(orderObj)
@@ -76,6 +73,10 @@ angular.module('menuApp').controller('cartController', function(httpService, sta
   };
 
   vm.showPrompt = function() {
+    if (vm.basket.length == 0){
+      window.alert('Cart is empty!');
+      return;
+    }
     $mdDialog.show({
       controller : 'cartAuthController',
       templateUrl : 'views/extra/cartAuthDialogView.html'

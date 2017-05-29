@@ -48,10 +48,11 @@ angular.module('menuApp').controller('cartAuthController', function($scope, $mdD
       var orderObj = { phoneCode : $scope.phoneCode, order : stateShareService.order, phoneNumber : $scope.phoneNumber };
       httpService.sendOrder(orderObj).then(
          function (response){
-             if (response.data.phone && response.data.password) {
+             if (response.data.orders.length > 0) {
                  $mdDialog.hide();
-                 stateShareService.phoneNumber = response.data.phone;
-                 stateShareService.password = response.data.password;
+                 stateShareService.history = response.data.orders;
+                 stateShareService.historyRetrieved = true;
+                 stateShareService.expandLatest = true;
                  $state.go('root.history');
              }
          });

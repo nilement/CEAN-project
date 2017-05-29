@@ -2,10 +2,7 @@
 
 angular.module('menuApp').controller('historyController', function(httpService, stateShareService, $mdDialog){
   var vm = this;
-  vm.history = [];
-
-  vm.noOrdersFound = true;
-  vm.buyerName = '';
+  vm.history = stateShareService.history;
   vm.historyRetrieved = stateShareService.historyRetrieved;
 
   vm.authPhoneNumber = '';

@@ -21,13 +21,16 @@ Validation.prototype.createOrderObj = function(requestBody){
         totalPrice: 0,
         phoneNumber: ''
     };
+    console.log(requestBody);
     orderObj.phoneNumber = requestBody.phoneNumber.replace(/[^0-9]+/, '');
     for (let i = 0; i < requestBody.order.length; i++){
         const currentItem = requestBody.order[i];
         let count = currentItem.count.toString().replace(/[^0-9]+/, '');
-        let itemID = currentItem.itemID.toString().replace(/^[a-zA-Z0-9]*$/, '');
+        let name = currentItem.name.toString().replace(/[^a-zA-Z]+/, '');
+        let itemID = currentItem.itemID.toString().replace(/^[^a-zA-Z0-9]*$/, '');
         let price = currentItem.price.replace(/[^0-9]+/, '');
-        let dish = { count : count, itemID : itemID, price : price };
+        let dish = { count : count, itemID : itemID, price : price, name: name };
+        orderObj.totalPrice = (parseFloat(orderObj.totalPrice) + parseFloat(currentItem.price) * currentItem.count).toFixed(2);
         orderObj.dishes.push(dish);
     }
     return orderObj;
@@ -35,6 +38,9 @@ Validation.prototype.createOrderObj = function(requestBody){
 
 Validation.prototype.createHistoryObj = function(response){
     let parsedResponse = JSON.parse(response);
+    if (parsedResponse.rows.length === 0){
+        return -1;
+    }
     let historyObj = { orders : [] };
     parsedResponse.rows.forEach((n) => {
         let order = {};
