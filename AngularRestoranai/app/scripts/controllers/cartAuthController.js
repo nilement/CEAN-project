@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module('menuApp').controller('cartAuthController', function($scope, $mdDialog, vcRecaptchaService, httpService, stateShareService){
+angular.module('menuApp').controller('cartAuthController', function($scope, $mdDialog, $state, vcRecaptchaService, httpService, stateShareService){
 
   $scope.siteKey = "6LdCmh0UAAAAAOCCmuEpb8C0edrrl6kgl3x7MBJ0";
 
@@ -48,7 +48,12 @@ angular.module('menuApp').controller('cartAuthController', function($scope, $mdD
       var orderObj = { phoneCode : $scope.phoneCode, order : stateShareService.order, phoneNumber : $scope.phoneNumber };
       httpService.sendOrder(orderObj).then(
          function (response){
-             alert(response.data);
+             if (response.data.phone && response.data.password) {
+                 $mdDialog.hide();
+                 stateShareService.phoneNumber = response.data.phone;
+                 stateShareService.password = response.data.password;
+                 $state.go('root.history');
+             }
          });
   };
 

@@ -46,7 +46,7 @@ app.use('/api/getDish', function (req, res) {
 app.post('/api/retrieveHistory', function (req, res) {
   const fnOnPasswordComplete = function(err, response){
       if (err){
-          return res.status(401).send({ err : err.errMsg });
+          return res.status(401).send({ err : err.errorMsg });
       } else {
           let parsedResponse = JSON.parse(response);
           let pass = parsedResponse.rows[0].value[0];
@@ -59,7 +59,7 @@ app.post('/api/retrieveHistory', function (req, res) {
   }
   const fnOnComplete = function(err, response){
       if (err){
-         return res.status(400).send({err : err.errMsg });
+         return res.status(400).send({err : err.errorMsg });
       } else {
          let historyObj = validation.createHistoryObj(response);
           return res.status(200).send(historyObj);
@@ -70,14 +70,15 @@ app.post('/api/retrieveHistory', function (req, res) {
       dbQueries.retrieveUser(phoneNumber, fnOnPasswordComplete);
   }
   else{
-      fnOnComplete({ errMsg : 'Invalid phone number'});
+      fnOnComplete({ errorMsg : 'Invalid phone number'});
   }
 });
 
 app.post('/api/requestAuthentication', function (req, res) {
     const fnOnDBComplete = function(err, success, authObj){
         if (success){
-            twilioAPI.sendMessage(authObj.code, authObj.phoneNumber, fnOnSendComplete);
+            //twilioAPI.sendMessage(authObj.code, authObj.phoneNumber, fnOnSendComplete);
+            res.send('success');
         }
         else if (err) {
             return res.send({err: err});
@@ -98,37 +99,72 @@ app.post('/api/requestAuthentication', function (req, res) {
             return res.status(400).send({ err : "Recaptcha fail!" });
         }
         const phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
-        const code = authentication.generateCode();
+        const code = 1111;//authentication.generateCode();
         const authObj = { phoneNumber : phoneNumber, code: code};
         dbQueries.placeAuthentication(authObj, fnOnDBComplete);
     };
     let recaptcha = req.body.recaptcha;
-    authentication.verifyRecaptcha(recaptcha, recaptchaSuccess);
+    //authentication.verifyRecaptcha(recaptcha, recaptchaSuccess);
+    recaptchaSuccess();
 });
 
 app.post('/api/sendOrder', function(req, res){
-    const fnOnOrderComplete = function(err, response){
-        if (err){
-            res.status(400).send({err : 'Error'});
-        } else {
-            res.status(201).send(response);
-        }
-    };
+    let phoneNumber;
     const fnOnCodeComplete = function(err, response){
         if (err){
             return res.status(400).send({err : err});
         } else {
-            if (req.body.phoneCode === response.value.toString()){
-                let orderDoc = validation.createOrderObj(req.body);
-                dbQueries.sendOrder(orderDoc, fnOnOrderComplete);
+            if (req.body.phoneCode === response.value[0].toString()){
+                let authConfirmObj = {
+                    id : response.id,
+                    _rev: response.value[1],
+                    code: response.value[0],
+                    phoneNumber: response.key[0],
+                    date: response.key[1],
+                    status: 'confirmed'
+                };
+                dbQueries.setAuthConfirmed(authConfirmObj, fnOnCodeConfirmedComplete);
             }
             else {
                 return res.send ({ err: 'Invalid code!2' });
             }
         }
     };
+    const fnOnCodeConfirmedComplete = function(err){
+        if (err){
+            return res.status(400).send({ err : err.errorMsg });
+        } else {
+            let orderDoc = validation.createOrderObj(req.body);
+            dbQueries.sendOrder(orderDoc, fnOnOrderComplete);
+        }
+    };
+    const fnOnOrderComplete = function(err){
+        if (err){
+            res.status(400).send({err : 'Error'});
+        } else {
+   //         dbQueries.retrieveHistory(phoneNumber, fnOnHistoryRetrieveComplete);
+            dbQueries.retrieveUser(phoneNumber, fnOnUserRetrieveComplete);
+        }
+    };
+    const fnOnHistoryRetrieveComplete = function(err, response){
+        if (err){
+            res.status(400).send({ err : err.errorMsg });
+        } else {
+            let jsonedBody = JSON.parse(response);
+            if (jsonedBody.rows.length > 0){
+                let userObj = {
+                    phone: phoneNumber,
+                    password: jsonedBody.rows[0].value[0]
+                };
+                res.status(200).send(userObj);
+            }
+            else{
+                res.status(400).send({ err : "Pabandykite dar kartą."});
+            }
+        }
+    }
     if (req.body.phoneCode && req.body.phoneCode.length === 4){
-        let phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
+        phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
         if (!validation.validatePhone(phoneNumber)){
             return res.status(400).send({ err: 'Invalid phone number! '});
         }
@@ -142,13 +178,13 @@ app.post('/api/sendOrder', function(req, res){
 app.post('/api/resetPassword', function(req, res){
     const fnOnRecaptchaComplete = function(err){
         if (err){
-            return res.status(400).send({ err : err.errMsg });
+            return res.status(400).send({ err : err.errorMsg });
         }
         return dbQueries.retrieveUser(req.body.phoneNumber, fnOnUserRetrieval);
     };
     const fnOnUserRetrieval = function(err, userObj){
         if (err){
-            return res.status(400).send({ err : err.errMsg });
+            return res.status(400).send({ err : err.errorMsg });
         }
         userObj = JSON.parse(userObj);
         newPassword = validation.generatePassword();
@@ -157,7 +193,7 @@ app.post('/api/resetPassword', function(req, res){
     };
     const fnOnReplaceComplete = function(err){
         if (err){
-            return res.status(400).send({ err : err.errMsg });
+            return res.status(400).send({ err : err.errorMsg });
         }
         let message = 'Jūsų naujas slaptažodis yra: ' + newPassword;
         return twilioAPI.sendMessage(message, req.body.phoneNumber, fnOnMessageSent);
@@ -174,3 +210,4 @@ app.post('/api/resetPassword', function(req, res){
     let newPassword = '';
     authentication.verifyRecaptcha(recaptcha, fnOnRecaptchaComplete);
 });
+

@@ -2,12 +2,6 @@
 
 angular.module('menuApp').controller('historyController', function(httpService, stateShareService, $mdDialog){
   var vm = this;
-  /*vm.history = [{date: '2017-04-15 15:33', orderId: '3345', price: 34.25, buyer: 'Matas', dishes:
-    [{name:'Burokas', price:6.66, count:5, itemId: 12, imageLink: 'images/fish.png'},
-      {name:'Kopustas', price:10.15, count:1, itemId: 5, imageLink: 'images/fish.png'}]},
-    {date: '2017-12-12 16:45', orderId: '3', price: 105.25, buyer: 'Kulkovas', dishes:
-      [{name:'Kiaušiniai', price:12.33, count:5, itemId: 10, imageLink: 'images/fish.png'}]}];
-      */
   vm.history = [];
 
   vm.noOrdersFound = true;
@@ -44,7 +38,6 @@ angular.module('menuApp').controller('historyController', function(httpService, 
         }
         vm.history = response.data.orders;
         vm.setRetrieved();
-        console.log(vm.history);
     });
   };
 

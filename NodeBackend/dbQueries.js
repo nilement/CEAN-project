@@ -12,6 +12,7 @@ const Queries = function(){
   this.adminPassword = 'slapt231!';
   this.adminName = 'admin';
   this.adminCookie = '';
+  this.expirationTime = 300000; // five minutes
 };
 
 Queries.prototype.cookieAuth = function(originalFunction, req, fnOnComplete){
@@ -54,7 +55,7 @@ Queries.prototype.sendOrder = function(order, fnOnComplete){
       // authentication fail status code, database cookie has expired
         return this.cookieAuth(this.sendOrder, order, fnOnComplete);
     } else if (201 === response.statusCode){
-        return fnOnComplete(null, 'Succesfully posted order to DB');
+        return fnOnComplete(null);
     }
     return fnOnComplete({errorMsg : 'Unhandled error!'});
     });
@@ -122,13 +123,11 @@ Queries.prototype.placeAuthentication = function(authObj, fnOnComplete){
 
 Queries.prototype.retrieveAuthentication = function(phoneNumber, fnOnComplete){
     let now = Date.now();
-    let fiveMinAgo = now - 300000; // 5 minutes * 60 seconds * 1000 ms in second
     let path = 'http://localhost:5984/cafe_example/_design/cafeData/_view/auth_codes_by_phone?limit=1&reduce=false&inclusive_end=true&start_key=["' +
-        phoneNumber + '"%2C+'+ now.toString() +']&end_key=["' + phoneNumber + '"%2C+'+ fiveMinAgo.toString() +']&descending=true';
+        phoneNumber + '"%2C+'+ now.toString() +']&end_key=["' + phoneNumber + '"%2C+'+ (now - this.expirationTime).toString() +']&descending=true';
     if (!this.adminCookie){
         return this.cookieAuth(this.retrieveAuthentication.bind(this), phoneNumber, fnOnComplete);
     }
-    // here goes sanitisation
     request({
         url: path,
         method: 'GET'
@@ -139,13 +138,13 @@ Queries.prototype.retrieveAuthentication = function(phoneNumber, fnOnComplete){
                 return fnOnComplete(null, parsedBody.rows[0]);
             }
             else if (parsedBody.rows && parsedBody.rows.length === 0){
-                fnOnComplete({ err : "auth code expired" });
+                fnOnComplete({ errorMsg : "auth code expired" });
             }
             else {
-                fnOnComplete({ err : "try again" });
+                fnOnComplete({ errorMsg : "try again" });
             }
         } else {
-            fnOnComplete({ err : error });
+            fnOnComplete({ errorMsg : error });
         }
     });
 };
@@ -192,9 +191,29 @@ Queries.prototype.retrieveUser = function(phoneNumber, fnOnComplete){
     });
 };
 
+Queries.prototype.createUser = function(userObj, fnOnComplete){
+    if (!this.adminCookie){
+        return this.cookieAuth(this.createUser.bind(this), phoneNumber, fnOnComplete);
+    }
+    request({
+        url: databaseUrl,
+        method: 'POST',
+        headers: {
+            cookie: this.adminCookie
+        }
+    }, (error, response)=> {
+        if (response.statusCode === 201){
+            return fnOnComplete(null, userObj);
+        }
+        else {
+            fnOnComplete({ errorMsg: 'Service not available'});
+        }
+    });
+};
+
 Queries.prototype.replaceUserDocument = function(userObj, fnOnComplete){
     if (!this.adminCookie) {
-        return this.cookieAuth(this.resetPassword.bind(this), userObj, fnOnComplete);
+        return this.cookieAuth(this.replaceUserDocument.bind(this), userObj, fnOnComplete);
     }
     request({
         url: databaseUrl + userObj.id,
@@ -211,6 +230,27 @@ Queries.prototype.replaceUserDocument = function(userObj, fnOnComplete){
             fnOnComplete({ errorMsg: 'Service not available'});
         }
     });
-}
+};
+
+Queries.prototype.setAuthConfirmed = function(authObj, fnOnComplete){
+    if (!this.adminCookie){
+        return this.cookieAuth(this.setAuthConfirmed.bind(this), authObj, fnOnComplete);
+    }
+    request({
+        url: databaseUrl + authObj.id,
+        method: 'PUT',
+        json: authObj,
+        headers: {
+            cookie: this.adminCookie
+        }
+    }, (error, response) => {
+        if (response.statusCode === 201){
+            return fnOnComplete(null, 'OK');
+        }
+        else {
+            fnOnComplete({ errorMsg: 'Service not available. '});
+        }
+    });
+};
 
 module.exports = new Queries();
