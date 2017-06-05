@@ -41,6 +41,12 @@ angular
         controller: 'historyController',
         controllerAs: 'vm'
       })
+      .state('root.menu', {
+          url: '/menu',
+          templateUrl: 'views/menuView.html',
+          controller: 'menuController',
+          controllerAs: 'vm'
+      })
     $sceDelegateProvider.resourceUrlWhitelist([
       'self',
       'http://localhost:5000/**'

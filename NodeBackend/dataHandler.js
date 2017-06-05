@@ -1,12 +1,12 @@
 const crypto = require('crypto');
 
-const Validation = function(){
+const DataHandler = function(){
 
 };
 
 const passwordCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-Validation.prototype.validatePhone = function(phoneNumber){
+DataHandler.prototype.validatePhone = function(phoneNumber){
     if (phoneNumber.length === 11){
         if (phoneNumber[0] === '3' && phoneNumber[1] === '7' && phoneNumber [2] === '0'){
             return true;
@@ -15,7 +15,7 @@ Validation.prototype.validatePhone = function(phoneNumber){
     return false;
 };
 
-Validation.prototype.createOrderObj = function(requestBody){
+DataHandler.prototype.createOrderObj = function(requestBody){
     let orderObj = {
         dishes: [],
         totalPrice: 0,
@@ -36,7 +36,7 @@ Validation.prototype.createOrderObj = function(requestBody){
     return orderObj;
 };
 
-Validation.prototype.createHistoryObj = function(response){
+DataHandler.prototype.createHistoryObj = function(response){
     let parsedResponse = JSON.parse(response);
     if (parsedResponse.rows.length === 0){
         return -1;
@@ -52,7 +52,29 @@ Validation.prototype.createHistoryObj = function(response){
     return historyObj;
 };
 
-Validation.prototype.generatePassword = function(){
+DataHandler.prototype.createMenuObj = function(rows){
+    let parsedRows = JSON.parse(rows).rows;
+    let menuObj = {};
+    let iterator = 0;
+    for (;iterator < parsedRows.length; iterator++){
+        let ptr = parsedRows[iterator].value;
+        let dish = {
+            name: ptr[0],
+            itemID: ptr[1],
+            price: ptr[2],
+            imageLink : ptr[3]
+        };
+        if (menuObj[parsedRows[iterator].key] === undefined){
+            menuObj[parsedRows[iterator].key] = {};
+            menuObj[parsedRows[iterator].key].dishes = [];
+            menuObj[parsedRows[iterator].key].category = parsedRows[iterator].key;
+        }
+        menuObj[parsedRows[iterator].key].dishes.push(dish);
+    }
+    return menuObj;
+};
+
+DataHandler.prototype.generatePassword = function(){
     const buf = crypto.randomBytes(8);
     let password = '';
     buf.forEach((char)=>{
@@ -61,4 +83,4 @@ Validation.prototype.generatePassword = function(){
     return password;
 };
 
-module.exports = new Validation();
+module.exports = new DataHandler();

@@ -3,6 +3,10 @@
 const express = require('express');
 const app = express();
 const helmet = require('helmet');
+const fs = require('fs');
+
+const http = require('http');
+const https = require('https');
 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -10,7 +14,7 @@ const cookieParser = require('cookie-parser');
 const dbQueries = require('./dbQueries.js');
 const twilioAPI = require('./twilioAPI.js');
 const authentication = require('./authentication.js');
-const validation = require('./validation');
+const dataHandler = require('./dataHandler.js');
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
@@ -24,15 +28,15 @@ app.use(function (req, res, next)  {
   next();
 });
 
-app.listen('5000');
+http.createServer(app).listen(5000);
 
 app.use(express.static('dist'));
 
 app.use('/menu', function (req, res)  {
-  res.redirect('index-48d46f7176.html');
+  res.redirect('index-07e040ed81.html');
 });
 
-app.use('/api/getDish', function (req, res) {
+app.get('/api/getDish', function (req, res) {
   const fnOnComplete = function(err, response){
     if (err){
       res.status(err.responseCode).send({ err: err.errorMsg });
@@ -41,6 +45,19 @@ app.use('/api/getDish', function (req, res) {
     }
   };
   dbQueries.getDish(req, fnOnComplete);
+});
+
+
+app.get('/api/menu', function(req, res){
+    const fnOnComplete = function(err, response){
+        if (err){
+            res.status(err.responseCode).send({ err: err.errorMsg });
+        } else {
+            let menuObj = dataHandler.createMenuObj(response);
+            return res.status(200).send(menuObj);
+        }
+    };
+    dbQueries.retrieveMenu(null, fnOnComplete);
 });
 
 app.post('/api/retrieveHistory', function (req, res) {
@@ -61,12 +78,12 @@ app.post('/api/retrieveHistory', function (req, res) {
       if (err){
          return res.status(400).send({err : err.errorMsg });
       } else {
-         let historyObj = validation.createHistoryObj(response);
+         let historyObj = dataHandler.createHistoryObj(response);
           return res.status(200).send(historyObj);
       }
   };
   const phoneNumber = req.body.phoneNumber.toString().replace(/[^0-9]+/, '');
-  if (validation.validatePhone(phoneNumber)) {
+  if (dataHandler.validatePhone(phoneNumber)) {
       dbQueries.retrieveUser(phoneNumber, fnOnPasswordComplete);
   }
   else{
@@ -105,7 +122,7 @@ app.post('/api/requestAuthentication', function (req, res) {
     let recaptcha = req.body.recaptcha;
     authentication.verifyRecaptcha(recaptcha, recaptchaSuccess);
 });
-
+//TODO: create user if none found
 app.post('/api/sendOrder', function(req, res){
     let phoneNumber;
     const fnOnCodeComplete = function(err, response){
@@ -132,7 +149,7 @@ app.post('/api/sendOrder', function(req, res){
         if (err){
             return res.status(400).send({ err : err.errorMsg });
         } else {
-            let orderDoc = validation.createOrderObj(req.body);
+            let orderDoc = dataHandler.createOrderObj(req.body);
             dbQueries.sendOrder(orderDoc, fnOnOrderComplete);
         }
     };
@@ -147,17 +164,17 @@ app.post('/api/sendOrder', function(req, res){
         if (err){
             res.status(400).send({ err : err.errorMsg });
         } else {
-                let historyObj = validation.createHistoryObj(response);
+                let historyObj = dataHandler.createHistoryObj(response);
                 if (historyObj === -1) {
                     res.status(400).send({ err : "Pabandykite dar kartą."});
                 } else {
                     res.status(200).send(historyObj);
                 }
         }
-    }
+    };
     if (req.body.phoneCode && req.body.phoneCode.length === 4){
         phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
-        if (!validation.validatePhone(phoneNumber)){
+        if (!dataHandler.validatePhone(phoneNumber)){
             return res.status(400).send({ err: 'Invalid phone number! '});
         }
         dbQueries.retrieveAuthentication(phoneNumber, fnOnCodeComplete);
@@ -166,7 +183,7 @@ app.post('/api/sendOrder', function(req, res){
         res.status(400).send({ err: 'Invalid code!1' });
     }
 });
-
+//TODO: error if no phone found
 app.post('/api/resetPassword', function(req, res){
     const fnOnRecaptchaComplete = function(err){
         if (err){
@@ -179,7 +196,7 @@ app.post('/api/resetPassword', function(req, res){
             return res.status(400).send({ err : err.errorMsg });
         }
         userObj = JSON.parse(userObj);
-        newPassword = validation.generatePassword();
+        newPassword = dataHandler.generatePassword();
         let resetObj = {
             id: userObj.rows[0].id,
             _rev: userObj.rows[0].value[1],
@@ -207,4 +224,5 @@ app.post('/api/resetPassword', function(req, res){
     let newPassword = '';
     authentication.verifyRecaptcha(recaptcha, fnOnRecaptchaComplete);
 });
+
 

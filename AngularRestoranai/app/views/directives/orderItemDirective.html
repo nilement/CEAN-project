@@ -6,13 +6,13 @@
         </div>
         <div flex layout="column">
             <div flex layout="row">
-            <div flex="90">{{title}}</div>
+                <div flex="90">{{title}}</div>
+            </div>
+            <div layout="row">
+                <p flex="30">{{count}}</p>
+                <p flex="40"></p>
+                <p flex="30">{{parsePrice()}}€</p>
+            </div>
         </div>
-        <div layout="row">
-            <p flex="30">{{count}}</p>
-            <p flex="40"></p>
-            <p flex="30">{{parsePrice()}}€</p>
-        </div>
-    </div>
 </md-card-content>
 </md-card>

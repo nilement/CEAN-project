@@ -1,13 +1,13 @@
-<md-content>
+<md-content ng-if="vm.historyRetrieved">
   <md-toolbar class="md-toolbar-tools">
     <h1>Užsakymų istorija</h1>
   </md-toolbar>
-  <h2 ng-if="vm.noOrdersFound">Užsakymų nerasta.</h2>
+  <!--<h2 ng-if="vm.noOrdersFound">Užsakymų nerasta.</h2>-->
   <md-content id="dynamic-content" class="f-clear-padding">
     <div class="md-accordion" ng-repeat="order in vm.history">
       <md-toolbar ng-click="vm.toggleOrder($index)">
         <div class="md-toolbar-tools">
-          <div>{{order.date}} #{{order.orderId}} {{order.buyer}} {{order.price}} €</div>
+          <div>{{order.date}} #{{order.orderId}} {{order.price}}€</div>
           <div flex></div>
           <div ng-class="{expandCollapse:true, active: order.expanded }"></div>
         </div>
@@ -18,5 +18,35 @@
         </order-item-directive>
       </div>
     </div>
+    <md-card flex layout="row" layout-align="center space-between">
+        <md-button ng-click="vm.setRetrieved()" class="md-raised md-primary" flex>Kitas telefonas</md-button>
+    </md-card>
   </md-content>
+</md-content>
+
+<md-content ng-if="!vm.historyRetrieved" layout="row" layout-align="space-around" layout-padding="layout-padding" ng-cloak="ng-cloak" class="login-form">
+    <md-card flex="flex" flex-gt-sm="50" flex-gt-md="33">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2><span>Užsakymų istorija</span></h2>
+            </div>
+        </md-toolbar>
+        <md-card-content>
+            <md-input-container class="md-block">
+                <label>Telefono numeris</label>
+                <input type="text" ng-model="vm.authPhoneNumber" required=""/>
+                <div role="alert" multiple="">
+                    <div ng-message="required" class="my-message">Įveskite telefono numerį.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block">
+                <label>Slaptažodis</label>
+                <input type="password" ng-model="vm.authPassword" required=""/>
+            </md-input-container>
+            <md-input-container layout="column">
+                <md-button ng-click="vm.retrieveHistory()" class="md-raised md-primary">&nbspPateikti užsakymus &nbsp</md-button>
+                <md-button ng-click="vm.showPrompt($event)" class="md-primary">Nežinau slaptažodžio</md-button>
+            <md-input-container class="md-block">
+        </md-card-content>
+    </md-card>
 </md-content>

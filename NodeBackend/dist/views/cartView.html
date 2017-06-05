@@ -11,8 +11,7 @@
     </md-content>
     <md-card md-colors="{background: 'grey'}">&nbsp;</md-card>
     <md-card flex layout="row" layout-align="center space-between">
-      <input ng-model="vm.buyerName" type="text" placeholder="Užsakovas">
-      <md-button flex class="md-raised" md-colors="{background: 'green'}" ng-click="vm.finishOrder()">
+      <md-button flex class="md-raised" md-colors="{background: 'green'}" ng-click="vm.showPrompt($event)">
         Dėti į užsakymą {{vm.basketPrice}} €
       </md-button>
     </md-card>

@@ -253,4 +253,23 @@ Queries.prototype.setAuthConfirmed = function(authObj, fnOnComplete){
     });
 };
 
+Queries.prototype.retrieveMenu = function(placeHolder, fnOnComplete){
+    if (!this.adminCookie){
+        return this.cookieAuth(this.retrieveMenu.bind(this), placeHolder, fnOnComplete);
+    }
+    request({
+        url: databaseUrl + '_design/cafeData/_view/all_dishes',
+        method: 'GET',
+        headers: {
+            cookie: this.adminCookie
+        }
+    }, (error, response) => {
+        if (response.statusCode === 200){
+            return fnOnComplete(null, response.body);
+        } else {
+            return { errorMsg : 'Service not available' , responseCode: 400};
+        }
+    })
+};
+
 module.exports = new Queries();

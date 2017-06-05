@@ -14,6 +14,17 @@ angular.module('menuApp').factory('httpService', function($http){
 		            return err;
 		          });
 		    },
+            retrieveMenu : function(){
+			    return $http({
+			        url: this.backendAddress + '/api/menu',
+                    method: 'GET'
+                })
+                    .then(function successCallback(res){
+                        return res;
+                    }, function failCallback(err){
+                        return err;
+                    });
+            },
 			retrieveHistory : function(authObj){
             return $http({
                     url: this.backendAddress + '/api/retrieveHistory',
