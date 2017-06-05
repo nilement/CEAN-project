@@ -20,7 +20,13 @@ angular.module('menuApp').controller('menuController', function(httpService, sta
         vm.retrieveMenu();
     }
 
-    vm.addDish = function(){
-
+    vm.addDish = function(item){
+        if (stateShareService.order[item.itemID] === undefined){
+            item.count = 1;
+            stateShareService.order[item.itemID] = item;
+        }
+        else{
+            stateShareService.order[item.itemID].count++;
+        }
     }
 });

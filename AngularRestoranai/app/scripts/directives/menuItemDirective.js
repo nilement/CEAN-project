@@ -7,10 +7,12 @@ angular.module('menuApp').directive('menuItemDirective', function(){
             title : '@',
             count : '@',
             price : '@',
+            addDishFn : '&',
         },
         templateUrl: 'views/directives/menuItemDirective.html',
         link: function(scope, element, attributes){
             scope.imageLink = attributes.imagelink;
-        }
+        },
+
     }
 });
