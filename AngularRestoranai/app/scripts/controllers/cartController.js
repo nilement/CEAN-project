@@ -9,33 +9,8 @@ angular.module('menuApp').config(function($sceDelegateProvider) {
 
 angular.module('menuApp').controller('cartController', function(httpService, stateShareService, $mdDialog){
   var vm = this;
-  vm.basketPrice = 0;
+  vm.basketPrice = stateShareService.orderPrice;
   vm.basket = stateShareService.order;
-
-  vm.addDish = function(dishId){
-    httpService.getDish(dishId)
-      .then(function (response){
-          if (response.data.err){
-            window.alert(response.data.err);
-          }
-          else{
-            var data = response.data.rows;
-            var dish = data[0];
-            var found = false;
-            vm.basket.forEach(function(item) {
-              if (item.itemID == dish.key) {
-                item.count += 1;
-                vm.basketPrice = (parseFloat(vm.basketPrice) + parseFloat(dish.value[1])).toFixed(2);
-                found = true;
-              }
-            });
-            if (!found){
-              vm.basketPrice = (parseFloat(vm.basketPrice) + parseFloat(dish.value[1])).toFixed(2);
-              vm.basket.push({name:dish.value[0], itemID:dish.key, price: dish.value[1], count: 1});
-            }
-          }
-      });
-  };
 
   vm.removeDishSingle = function(dish){
     var index = vm.basket.indexOf(dish);
