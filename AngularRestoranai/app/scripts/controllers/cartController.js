@@ -33,24 +33,6 @@ angular.module('menuApp').controller('cartController', function($scope, httpServ
     delete vm.basket[dish.itemID];
   };
 
-  vm.sendOrder = function(){
-    var foods = [];
-    for (var i = 0; i < vm.basket.length; i++){
-      foods.push({ count : vm.basket[i].count, dish : vm.basket[i].itemID, price : vm.basket[i].price, name : vm.basket[i].name });
-    }
-    var orderObj=angular.toJson({dishes: foods, total: vm.basketPrice, phoneNumber: '860401485' });
-    httpService.sendOrder(orderObj)
-      .then(function (res){
-        if (res.data.err){
-          window.alert("Can't find DB.");
-        }
-        else{
-          vm.basketPrice = 0;
-          vm.basket.splice(0, vm.basket.length);
-        }
-      });
-  };
-
   vm.showPrompt = function() {
     if (vm.basket.length == 0){
       window.alert('Cart is empty!');
