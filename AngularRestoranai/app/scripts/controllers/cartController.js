@@ -7,26 +7,30 @@ angular.module('menuApp').config(function($sceDelegateProvider) {
   ]);
 });
 
-angular.module('menuApp').controller('cartController', function(httpService, stateShareService, $mdDialog){
+angular.module('menuApp').controller('cartController', function($scope, httpService, stateShareService, $mdDialog){
   var vm = this;
   vm.basketPrice = stateShareService.orderPrice;
   vm.basket = stateShareService.order;
 
   vm.removeDishSingle = function(dish){
-    var index = vm.basket.indexOf(dish);
-    vm.basket[index].count -= 1;
-    if (vm.basket[index].count === 0){
-
-      vm.basket.splice(index,1);
+    vm.basket[dish.itemID].count -= 1;
+    if (vm.basket[dish.itemID].count === 0){
+      delete vm.basket[dish.itemID];
     }
-    vm.basketPrice = (parseFloat(vm.basketPrice) - parseFloat(dish.price)).toFixed(2);
+    stateShareService.orderPrice = (parseFloat(stateShareService.orderPrice) - parseFloat(dish.price)).toFixed(2);
+    stateShareService.orderLength--;
+  };
+
+  vm.addDishSingle = function(dish){
+      vm.basket[dish.itemID].count += 1;
+      stateShareService.orderPrice = (parseFloat(stateShareService.orderPrice) + parseFloat(dish.price)).toFixed(2);
+      stateShareService.orderLength++;
   };
 
   vm.removeDishAll = function(dish){
-    var index = vm.basket.indexOf(dish);
-    vm.basketPrice = (parseFloat(vm.basketPrice) - parseFloat(parseFloat(dish.price) * dish.count)).toFixed(2);
-    vm.basket[index].count = 0;
-    vm.basket.splice(index,1);
+    stateShareService.orderPrice = (parseFloat(stateShareService.orderPrice) - parseFloat(parseFloat(dish.price) * dish.count)).toFixed(2);
+    stateShareService.orderLength -= dish.count;
+    delete vm.basket[dish.itemID];
   };
 
   vm.sendOrder = function(){
@@ -57,4 +61,10 @@ angular.module('menuApp').controller('cartController', function(httpService, sta
       templateUrl : 'views/extra/cartAuthDialogView.html'
     });
   };
+
+    $scope.$watch(function(){
+        return stateShareService.orderPrice;
+    }, function(){
+        vm.basketPrice = stateShareService.orderPrice;
+    });
 });
