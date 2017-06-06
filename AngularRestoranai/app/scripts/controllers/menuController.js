@@ -21,6 +21,7 @@ angular.module('menuApp').controller('menuController', function(httpService, sta
     }
 
     vm.addDish = function(item){
+        stateShareService.orderLength++;
         if (stateShareService.order[item.itemID] === undefined){
             item.count = 1;
             stateShareService.order[item.itemID] = item;
