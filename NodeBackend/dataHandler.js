@@ -21,18 +21,19 @@ DataHandler.prototype.createOrderObj = function(requestBody){
         totalPrice: 0,
         phoneNumber: ''
     };
-    console.log(requestBody);
     orderObj.phoneNumber = requestBody.phoneNumber.replace(/[^0-9]+/, '');
-    for (let i = 0; i < requestBody.order.length; i++){
-        const currentItem = requestBody.order[i];
-        let count = currentItem.count.toString().replace(/[^0-9]+/, '');
-        let name = currentItem.name.toString().replace(/[^a-zA-Z]+/, '');
-        let itemID = currentItem.itemID.toString().replace(/^[^a-zA-Z0-9]*$/, '');
-        let price = currentItem.price.replace(/[^0-9]+/, '');
-        let dish = { count : count, itemID : itemID, price : price, name: name };
-        orderObj.totalPrice = (parseFloat(orderObj.totalPrice) + parseFloat(currentItem.price) * currentItem.count).toFixed(2);
-        orderObj.dishes.push(dish);
-    }
+    for (let key in requestBody.order){
+        if (requestBody.order.hasOwnProperty(key)) {
+            let item = requestBody.order[key];
+            let count = item.count.toString().replace(/[^0-9]+/, '');
+            let name = item.name.toString().replace(/[^a-zA-Z]+/, '');
+            let itemID = item.itemID.toString().replace(/^[^a-zA-Z0-9]*$/, '');
+            let price = item.price.toString().replace(/[^0-9.]+/, '');
+            let dish = {count: count, itemID: itemID, price: price, name: name};
+            orderObj.totalPrice = (parseFloat(orderObj.totalPrice) + parseFloat(item.price) * item.count).toFixed(2);
+            orderObj.dishes.push(dish);
+        }
+    };
     return orderObj;
 };
 
