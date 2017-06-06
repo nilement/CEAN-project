@@ -150,7 +150,7 @@ Queries.prototype.retrieveAuthentication = function(phoneNumber, fnOnComplete){
 };
 
 Queries.prototype.retrieveHistory = function(phoneNumber, fnOnComplete){
-    let path = ('_design/cafeData/_view/history?keys=["' + phoneNumber + '"]');
+    let path = ('_design/cafeData/_view/history?keys=["' + phoneNumber + '"]&descending=true');
     if (!this.adminCookie){
         return this.cookieAuth(this.retrieveHistory.bind(this), phoneNumber, fnOnComplete);
     }

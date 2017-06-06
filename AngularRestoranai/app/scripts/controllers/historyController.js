@@ -8,6 +8,11 @@ angular.module('menuApp').controller('historyController', function(httpService, 
   vm.authPhoneNumber = '';
   vm.authPassword = '';
 
+  if (stateShareService.expandLatest){
+      vm.history[0].expanded = true;
+      stateShareService.expandLatest = false;
+  }
+
   vm.toggleOrder = function(index){
     for (var i = 0; i < vm.history.length; i++){
       if (i !== index){
