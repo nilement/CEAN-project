@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const moment = require('moment');
 
 const DataHandler = function(){
 
@@ -44,9 +45,11 @@ DataHandler.prototype.createHistoryObj = function(response){
     }
     let historyObj = { orders : [] };
     parsedResponse.rows.forEach((n) => {
+        console.log(n);
         let order = {};
+        let dateObj = moment(n.value[1]);
         order.dishes = n.value[0];
-        order.date = new Date(n.value[1]);
+        order.date = dateObj.format('DD-MM-YY, h:mm');
         order.price = n.value[2];
         historyObj.orders.push(order);
     });

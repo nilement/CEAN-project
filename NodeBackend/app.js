@@ -79,7 +79,7 @@ app.post('/api/retrieveHistory', function (req, res) {
          return res.status(400).send({err : err.errorMsg });
       } else {
          let historyObj = dataHandler.createHistoryObj(response);
-          return res.status(200).send(historyObj);
+         return res.status(200).send(historyObj);
       }
   };
   const phoneNumber = req.body.phoneNumber.toString().replace(/[^0-9]+/, '');
