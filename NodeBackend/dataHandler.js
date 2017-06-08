@@ -105,8 +105,12 @@ DataHandler.prototype.handleDishQuery = function(req) {
 
 DataHandler.prototype.createAuthObj = function(req){
     const phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
-    const code = authentication.generateCode();
-    const authObj = { phoneNumber : phoneNumber, code: code};
+    const code = this.generateCode();
+    return { phoneNumber : phoneNumber, code: code};
+};
+
+DataHandler.prototype.generateCode = function(){
+    return Math.floor(Math.random()* 9000 + 1000);
 };
 
 module.exports = new DataHandler();

@@ -28,6 +28,14 @@ app.use(function (req, res, next)  {
   next();
 });
 
+app.use(function (error, req, res, next){
+    if (error instanceof SyntaxError){
+        return res.status(400).send({ err: "Invalid data! "});
+    } else {
+        next();
+    }
+});
+
 http.createServer(app).listen(5000);
 
 app.use(express.static('dist'));
@@ -126,6 +134,7 @@ app.post('/api/requestAuthentication', function (req, res) {
 });
 //TODO: create user if none found
 app.post('/api/sendOrder', function(req, res){
+    console.log('wat');
     let phoneNumber;
     const fnOnCodeComplete = function(err, response){
         if (err){
@@ -174,7 +183,8 @@ app.post('/api/sendOrder', function(req, res){
                 }
         }
     };
-    if (req.body.phoneCode && req.body.phoneNumber && req.body.phoneCode.length === 4){
+    if (req.body.phoneCode && req.body.phoneNumber && req.body.phoneCode.toString().length === 4){
+        console.log('wat')
         phoneNumber = req.body.phoneNumber.toString().replace(/[^0-9]+/, '');
         if (!dataHandler.validatePhone(phoneNumber)){
             return res.status(400).send({ err: 'Invalid phone number! '});

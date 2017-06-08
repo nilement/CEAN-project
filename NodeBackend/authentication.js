@@ -30,8 +30,4 @@ Authentication.prototype.verifyRecaptcha = function(recaptcha, successFn){
     });
 };
 
-Authentication.prototype.generateCode = function(){
-    return Math.floor(Math.random()* 9000 + 1000);
-};
-
 module.exports = new Authentication();
