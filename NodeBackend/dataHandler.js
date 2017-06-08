@@ -7,10 +7,15 @@ const DataHandler = function(){
 
 const passwordCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-DataHandler.prototype.validatePhone = function(phoneNumber){
-    if (phoneNumber.length === 11){
-        if (phoneNumber[0] === '3' && phoneNumber[1] === '7' && phoneNumber [2] === '0'){
-            return true;
+DataHandler.prototype.handlePhoneNumber = function(req){
+    let phoneNumber = req.body.phoneNumber;
+    if (phoneNumber){
+        phoneNumber = phoneNumber.toString();
+        if (phoneNumber.length === 11){
+            if (phoneNumber[0] === '3' && phoneNumber[1] === '7' && phoneNumber [2] === '0'){
+                req.body.phoneNumber.toString().replace(/[^0-9]+/, '');
+                return phoneNumber;
+            }
         }
     }
     return false;
@@ -85,6 +90,23 @@ DataHandler.prototype.generatePassword = function(){
         password += passwordCharacters.charAt(char % passwordCharacters.length);
     });
     return password;
+};
+
+DataHandler.prototype.handleDishQuery = function(req) {
+    if (req.query.dishId) {
+        let dish = req.query.dishId.toString().replace(/\D/g, '');
+        if (dish.length > 0) {
+            return dish;
+        }
+        return false;
+    }
+    return false;
+};
+
+DataHandler.prototype.createAuthObj = function(req){
+    const phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
+    const code = authentication.generateCode();
+    const authObj = { phoneNumber : phoneNumber, code: code};
 };
 
 module.exports = new DataHandler();

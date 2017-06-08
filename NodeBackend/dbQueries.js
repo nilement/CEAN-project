@@ -62,13 +62,12 @@ Queries.prototype.sendOrder = function(order, fnOnComplete){
 };
 
 
-Queries.prototype.getDish = function(req, fnOnComplete){
-    let orderId = req.query.dishId.replace(/\D/g, '');
-    let path = databaseUrl + '_design/cafeData/_view/dishes_by_id?key=' + orderId;
+Queries.prototype.getDish = function(dishID, fnOnComplete){
+    let path = databaseUrl + '_design/cafeData/_view/dishes_by_id?key=' + dishID;
     if (!this.adminCookie){
         return this.cookieAuth(this.getDish.bind(this), req, fnOnComplete);
     }
-    if (req.query.dishId === undefined){
+    if (dishID === undefined){
         return fnOnComplete({errorMsg: 'Invalid request!', responseCode:400});
     }
     request({

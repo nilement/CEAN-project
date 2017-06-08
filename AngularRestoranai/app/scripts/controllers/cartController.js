@@ -11,6 +11,7 @@ angular.module('menuApp').controller('cartController', function($scope, httpServ
   var vm = this;
   vm.basketPrice = stateShareService.orderPrice;
   vm.basket = stateShareService.order;
+  vm.orderLength = stateShareService.orderLength;
 
   vm.removeDishSingle = function(dish){
     vm.basket[dish.itemID].count -= 1;
@@ -34,7 +35,7 @@ angular.module('menuApp').controller('cartController', function($scope, httpServ
   };
 
   vm.showPrompt = function() {
-    if (vm.basket.length == 0){
+    if (stateShareService.orderLength == 0){
       window.alert('Cart is empty!');
       return;
     }
@@ -48,5 +49,11 @@ angular.module('menuApp').controller('cartController', function($scope, httpServ
         return stateShareService.orderPrice;
     }, function(){
         vm.basketPrice = stateShareService.orderPrice;
+    });
+
+    $scope.$watch(function(){
+        return stateShareService.orderLength;
+    }, function(){
+        vm.orderLengt = stateShareService.orderLength;
     });
 });

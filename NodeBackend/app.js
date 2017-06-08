@@ -44,7 +44,12 @@ app.get('/api/getDish', function (req, res) {
       res.status(200).send(response);
     }
   };
-  dbQueries.getDish(req, fnOnComplete);
+  let dishID = dataHandler.handleDishQuery(req);
+  if (dishID){
+      dbQueries.getDish(dishID, fnOnComplete);
+  } else {
+      res.send(400).send({ err: "Invalid dish ID!"});
+  }
 });
 
 
@@ -73,7 +78,7 @@ app.post('/api/retrieveHistory', function (req, res) {
               return res.status(201).send({ err : 'Incorrect password!' });
           }
       }
-  }
+  };
   const fnOnComplete = function(err, response){
       if (err){
          return res.status(400).send({err : err.errorMsg });
@@ -82,16 +87,22 @@ app.post('/api/retrieveHistory', function (req, res) {
          return res.status(200).send(historyObj);
       }
   };
-  const phoneNumber = req.body.phoneNumber.toString().replace(/[^0-9]+/, '');
-  if (dataHandler.validatePhone(phoneNumber)) {
+  const phoneNumber = dataHandler.handlePhoneNumber(req);
+  if (phoneNumber) {
       dbQueries.retrieveUser(phoneNumber, fnOnPasswordComplete);
-  }
-  else{
+  } else {
       fnOnComplete({ errorMsg : 'Invalid phone number'});
   }
 });
 
 app.post('/api/requestAuthentication', function (req, res) {
+    const recaptchaSuccess = function(err){
+        if (err) {
+            return res.status(400).send({ err : "Recaptcha fail!" });
+        }
+        let authObj = dataHandler.createAuthObj(req);
+        dbQueries.placeAuthentication(authObj, fnOnDBComplete);
+    };
     const fnOnDBComplete = function(err, success, authObj){
         if (success){
             twilioAPI.sendMessage(authObj.code, authObj.phoneNumber, fnOnSendComplete);
@@ -109,15 +120,6 @@ app.post('/api/requestAuthentication', function (req, res) {
         } else {
             return res.status(200).send('Code sent!');
         }
-    };
-    const recaptchaSuccess = function(err){
-        if (err) {
-            return res.status(400).send({ err : "Recaptcha fail!" });
-        }
-        const phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
-        const code = authentication.generateCode();
-        const authObj = { phoneNumber : phoneNumber, code: code};
-        dbQueries.placeAuthentication(authObj, fnOnDBComplete);
     };
     let recaptcha = req.body.recaptcha;
     authentication.verifyRecaptcha(recaptcha, recaptchaSuccess);
@@ -172,15 +174,15 @@ app.post('/api/sendOrder', function(req, res){
                 }
         }
     };
-    if (req.body.phoneCode && req.body.phoneCode.length === 4){
-        phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
+    if (req.body.phoneCode && req.body.phoneNumber && req.body.phoneCode.length === 4){
+        phoneNumber = req.body.phoneNumber.toString().replace(/[^0-9]+/, '');
         if (!dataHandler.validatePhone(phoneNumber)){
             return res.status(400).send({ err: 'Invalid phone number! '});
         }
         dbQueries.retrieveAuthentication(phoneNumber, fnOnCodeComplete);
     }
     else{
-        res.status(400).send({ err: 'Invalid code!1' });
+        res.status(200).send({ err: 'Invalid code!' });
     }
 });
 //TODO: error if no phone found
@@ -220,9 +222,8 @@ app.post('/api/resetPassword', function(req, res){
             return res.status(200).send({ response: response });
         }
     };
-    let recaptcha = req.body.recaptcha;
     let newPassword = '';
-    authentication.verifyRecaptcha(recaptcha, fnOnRecaptchaComplete);
+    authentication.verifyRecaptcha(req.body.recaptcha, fnOnRecaptchaComplete);
 });
 
 
