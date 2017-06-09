@@ -5,12 +5,12 @@ const auth = require('./authentication.js');
 //TODO: Move database view names as global constants
 
 const baseDbUrl = 'localhost:5984';
-const databaseUrl = 'http://localhost:5984/cafe_example/';
-const uuidUrl = 'http://localhost:5984/_uuids';
 
 const Queries = function(){
-  this.adminPassword = 'slapt231!';
-  this.adminName = 'admin';
+  this.adminName = process.env.DB_USER_NAME;
+  this.adminPassword = process.env.DB_USER_PASS;
+  this.databaseUrl = process.env.DB_URL;
+
   this.adminCookie = '';
   this.expirationTime = 300000; // five minutes
 };
@@ -42,7 +42,7 @@ Queries.prototype.sendOrder = function(order, fnOnComplete){
     }
     order.date = Date.now();
     request({
-        url: databaseUrl,
+        url: this.databaseUrl,
         method: 'POST',
         json: order,
         headers:{
@@ -63,7 +63,7 @@ Queries.prototype.sendOrder = function(order, fnOnComplete){
 
 
 Queries.prototype.getDish = function(dishID, fnOnComplete){
-    let path = databaseUrl + '_design/cafeData/_view/dishes_by_id?key=' + dishID;
+    let path = this.databaseUrl + '_design/cafeData/_view/dishes_by_id?key=' + dishID;
     if (!this.adminCookie){
         return this.cookieAuth(this.getDish.bind(this), req, fnOnComplete);
     }
@@ -101,7 +101,7 @@ Queries.prototype.placeAuthentication = function(authObj, fnOnComplete){
     authObj.status = 'unconfirmed';
     authObj.date = Date.now();
     request({
-        url: databaseUrl,
+        url: this.databaseUrl,
         method: 'POST',
         json : authObj,
         headers: {
@@ -154,7 +154,7 @@ Queries.prototype.retrieveHistory = function(phoneNumber, fnOnComplete){
         return this.cookieAuth(this.retrieveHistory.bind(this), phoneNumber, fnOnComplete);
     }
     request({
-        url: databaseUrl + path,
+        url: this.databaseUrl + path,
         method: 'GET',
         headers: {
             cookie: this.adminCookie
@@ -175,7 +175,7 @@ Queries.prototype.retrieveUser = function(phoneNumber, fnOnComplete){
         return this.cookieAuth(this.retrieveUser.bind(this), phoneNumber, fnOnComplete);
     }
     request({
-        url: databaseUrl + path,
+        url: this.databaseUrl + path,
         method: 'GET',
         headers: {
             cookie: this.adminCookie
@@ -195,7 +195,7 @@ Queries.prototype.createUser = function(userObj, fnOnComplete){
         return this.cookieAuth(this.createUser.bind(this), phoneNumber, fnOnComplete);
     }
     request({
-        url: databaseUrl,
+        url: this.databaseUrl,
         method: 'POST',
         headers: {
             cookie: this.adminCookie
@@ -215,7 +215,7 @@ Queries.prototype.replaceUserDocument = function(userObj, fnOnComplete){
         return this.cookieAuth(this.replaceUserDocument.bind(this), userObj, fnOnComplete);
     }
     request({
-        url: databaseUrl + userObj.id,
+        url: this.databaseUrl + userObj.id,
         method: 'PUT',
         json: userObj,
         headers:{
@@ -236,7 +236,7 @@ Queries.prototype.setAuthConfirmed = function(authObj, fnOnComplete){
         return this.cookieAuth(this.setAuthConfirmed.bind(this), authObj, fnOnComplete);
     }
     request({
-        url: databaseUrl + authObj.id,
+        url: this.databaseUrl + authObj.id,
         method: 'PUT',
         json: authObj,
         headers: {
@@ -257,7 +257,7 @@ Queries.prototype.retrieveMenu = function(placeHolder, fnOnComplete){
         return this.cookieAuth(this.retrieveMenu.bind(this), placeHolder, fnOnComplete);
     }
     request({
-        url: databaseUrl + '_design/cafeData/_view/all_dishes',
+        url: this.databaseUrl + '_design/cafeData/_view/all_dishes',
         method: 'GET',
         headers: {
             cookie: this.adminCookie

@@ -1,7 +1,7 @@
 const request = require('request');
 
 const Authentication = function(){
-    this.recaptchaSecret = '6LdCmh0UAAAAAMgi96xrfXfyXA2PyhsLzs_r_2hr';
+    this.recaptchaSecret = process.env.RECAPTCHA_SECRET;
 };
 
 Authentication.prototype.verifyRecaptcha = function(recaptcha, successFn){

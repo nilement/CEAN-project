@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const moment = require('moment');
+const validator = require('validator');
 
 const DataHandler = function(){
 
@@ -50,7 +51,6 @@ DataHandler.prototype.createHistoryObj = function(response){
     }
     let historyObj = { orders : [] };
     parsedResponse.rows.forEach((n) => {
-        console.log(n);
         let order = {};
         let dateObj = moment(n.value[1]);
         order.dishes = n.value[0];
@@ -93,14 +93,14 @@ DataHandler.prototype.generatePassword = function(){
 };
 
 DataHandler.prototype.handleDishQuery = function(req) {
-    if (req.query.dishId) {
-        let dish = req.query.dishId.toString().replace(/\D/g, '');
-        if (dish.length > 0) {
-            return dish;
-        }
+    try {
+        req.check('dishId', 'Invalid dish ID!').isInt();
+    }
+    catch(e){
+        console.log(e);
         return false;
     }
-    return false;
+    return true;
 };
 
 DataHandler.prototype.createAuthObj = function(req){
