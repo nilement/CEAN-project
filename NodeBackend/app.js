@@ -4,7 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const helmet = require('helmet');
-const fs = require('fs');
+const expressValidator = require('express-validator');
 
 const http = require('http');
 const https = require('https');
@@ -21,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(helmet());
+app.use(expressValidator());
 
 app.use(function (req, res, next)  {
   res.header('Access-Control-Allow-Origin', '*');
@@ -42,7 +43,7 @@ http.createServer(app).listen(process.env.NODE_PORT);
 app.use(express.static('dist'));
 
 app.use('/menu', function (req, res)  {
-  res.redirect('index-07e040ed81.html');
+  res.redirect(process.env.STATIC_FILE);
 });
 
 app.get('/api/getDish', function (req, res) {
@@ -109,11 +110,19 @@ app.post('/api/requestAuthentication', function (req, res) {
         if (err) {
             return res.status(400).send({ err : "Recaptcha fail!" });
         }
-        let authObj = dataHandler.createAuthObj(req);
+        dataHandler.handleAuthRequest(req, fnOnValidateSuccess);
+    };
+    const fnOnValidateSuccess = function(err, authObj){
+        if (err){
+            return res.status(400).send({ err : err.errorMsg });
+        }
         dbQueries.placeAuthentication(authObj, fnOnDBComplete);
     };
     const fnOnDBComplete = function(err, success, authObj){
         if (success){
+            if (process.env.NODE_ENV === 'development') {
+                return fnOnSendComplete();
+            }
             twilioAPI.sendMessage(authObj.code, authObj.phoneNumber, fnOnSendComplete);
         }
         else if (err) {
@@ -131,28 +140,31 @@ app.post('/api/requestAuthentication', function (req, res) {
         }
     };
     let recaptcha = req.body.recaptcha;
+    if (process.env.NODE_ENV === 'development'){
+        return recaptchaSuccess();
+    }
     authentication.verifyRecaptcha(recaptcha, recaptchaSuccess);
 });
+
 //TODO: create user if none found
 app.post('/api/sendOrder', function(req, res){
-    let phoneNumber;
+    const fnOnInputValidateComplete = function(err){
+        if (err){
+            return res.status(400).send({ err: err.errorMsg });
+        }
+        dbQueries.retrieveAuthentication(req.body.phoneNumber, fnOnCodeComplete);
+    };
     const fnOnCodeComplete = function(err, response){
         if (err){
             return res.status(400).send({err : err});
         } else {
-            if (req.body.phoneCode === response.value[0].toString()){
-                let authConfirmObj = {
-                    id : response.id,
-                    _rev: response.value[1],
-                    code: response.value[0],
-                    phoneNumber: response.key[0],
-                    date: response.key[1],
-                    status: 'confirmed'
-                };
+            let codeFromDatabase = response.value[0].toString();
+            if (req.body.phoneCode === codeFromDatabase){
+                let authConfirmObj = dataHandler.createVerifiedAuthObj(response);
                 dbQueries.setAuthConfirmed(authConfirmObj, fnOnCodeConfirmedComplete);
             }
             else {
-                return res.send ({ err: 'Invalid code!2' });
+                return res.send ({ err: 'Invalid code!' });
             }
         }
     };
@@ -160,7 +172,7 @@ app.post('/api/sendOrder', function(req, res){
         if (err){
             return res.status(400).send({ err : err.errorMsg });
         } else {
-            let orderDoc = dataHandler.createOrderObj(req.body);
+            let orderDoc = dataHandler.createOrderObj(req);
             dbQueries.sendOrder(orderDoc, fnOnOrderComplete);
         }
     };
@@ -183,16 +195,7 @@ app.post('/api/sendOrder', function(req, res){
                 }
         }
     };
-    if (req.body.phoneCode && req.body.phoneNumber && req.body.phoneCode.toString().length === 4){
-        phoneNumber = req.body.phoneNumber.toString().replace(/[^0-9]+/, '');
-        if (!dataHandler.validatePhone(phoneNumber)){
-            return res.status(400).send({ err: 'Invalid phone number! '});
-        }
-        dbQueries.retrieveAuthentication(phoneNumber, fnOnCodeComplete);
-    }
-    else{
-        res.status(200).send({ err: 'Invalid code!' });
-    }
+    dataHandler.handleOrderRequest(req, fnOnInputValidateComplete);
 });
 //TODO: error if no phone found
 app.post('/api/resetPassword', function(req, res){

@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const moment = require('moment');
 const validator = require('validator');
+const util = require('util');
 
 const DataHandler = function(){
 
@@ -8,40 +9,63 @@ const DataHandler = function(){
 
 const passwordCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-DataHandler.prototype.handlePhoneNumber = function(req){
-    let phoneNumber = req.body.phoneNumber;
-    if (phoneNumber){
-        phoneNumber = phoneNumber.toString();
-        if (phoneNumber.length === 11){
-            if (phoneNumber[0] === '3' && phoneNumber[1] === '7' && phoneNumber [2] === '0'){
-                req.body.phoneNumber.toString().replace(/[^0-9]+/, '');
-                return phoneNumber;
-            }
-        }
-    }
-    return false;
+DataHandler.prototype.generateCode = function(){
+    return Math.floor(Math.random()* 9000 + 1000);
 };
 
-DataHandler.prototype.createOrderObj = function(requestBody){
+DataHandler.prototype.createVerifiedAuthObj = function(response){
+    return {
+        id : response.id,
+        code: response.value[0],
+        _rev: response.value[1],
+        phoneNumber: response.key[0],
+        date: response.key[1],
+        status: 'confirmed'
+    };
+};
+
+DataHandler.prototype.handleOrderRequest = function(req, fnOnValidateComplete){
+    req.checkBody('phoneCode', null).notEmpty().isInt({ min: 0, max: 9999 });
+    req.checkBody('phoneNumber', null).notEmpty().isInt();
+    req.getValidationResult().then((result) => {
+        if (result.isEmpty()) {
+            fnOnValidateComplete(null);
+        } else {
+            fnOnValidateComplete({ errorMsg : "Invalid request data!" });
+        }
+    });
+};
+
+DataHandler.prototype.createOrderObj = function(req, fnOnComplete){
     let orderObj = {
         dishes: [],
         totalPrice: 0,
         phoneNumber: ''
     };
-    orderObj.phoneNumber = requestBody.phoneNumber.replace(/[^0-9]+/, '');
-    for (let key in requestBody.order){
-        if (requestBody.order.hasOwnProperty(key)) {
-            let item = requestBody.order[key];
-            let count = item.count.toString().replace(/[^0-9]+/, '');
-            let name = item.name.toString().replace(/[^a-zA-Z]+/, '');
-            let itemID = item.itemID.toString().replace(/^[^a-zA-Z0-9]*$/, '');
-            let price = item.price.toString().replace(/[^0-9.]+/, '');
-            let dish = {count: count, itemID: itemID, price: price, name: name};
-            orderObj.totalPrice = (parseFloat(orderObj.totalPrice) + parseFloat(item.price) * item.count).toFixed(2);
-            orderObj.dishes.push(dish);
+    req.checkBody('phoneNumber', null).notEmpty().isInt();
+    req.checkBody('order', null).notEmpty();
+    console.log('is array?');
+    console.log(req.body.order.constructor === Array);
+    console.log(req.body.order);
+    req.getValidationResult().then(function(result){
+        if (!result.isEmpty()){
+            return fnOnComplete({ errorMsg : 'Invalid data!' });
         }
-    };
-    return orderObj;
+        orderObj.phoneNumber = req.body.phoneNumber;
+        for (let key in req.body.order){
+            if (req.body.order.hasOwnProperty(key)) {
+                let item = req.body.order[key];
+                let count = item.count.toString().replace(/[^0-9]+/, '');
+                let name = item.name.toString().replace(/[^a-zA-Z]+/, '');
+                let itemID = item.itemID.toString().replace(/^[^a-zA-Z0-9]*$/, '');
+                let price = item.price.toString().replace(/[^0-9.]+/, '');
+                let dish = {count: count, itemID: itemID, price: price, name: name};
+                orderObj.totalPrice = (parseFloat(orderObj.totalPrice) + parseFloat(item.price) * item.count).toFixed(2);
+                orderObj.dishes.push(dish);
+            }
+        };
+        return fnOnComplete (null, orderObj);
+    });
 };
 
 DataHandler.prototype.createHistoryObj = function(response){
@@ -92,25 +116,31 @@ DataHandler.prototype.generatePassword = function(){
     return password;
 };
 
-DataHandler.prototype.handleDishQuery = function(req) {
-    try {
-        req.check('dishId', 'Invalid dish ID!').isInt();
-    }
-    catch(e){
-        console.log(e);
-        return false;
-    }
-    return true;
+DataHandler.prototype.handleDishQuery = function(req, fnOnValidate) {
+    req.checkQuery('dishId', null).notEmpty().isInt();
+    req.getValidationResult().then(function(result){
+       if (!result.isEmpty()){
+           return fnOnValidate({ errorMsg : "Invalid input!" });
+       }
+       return fnOnValidate(null);
+    });
 };
 
-DataHandler.prototype.createAuthObj = function(req){
-    const phoneNumber = req.body.phoneNumber.replace(/[^0-9]+/, '');
-    const code = this.generateCode();
-    return { phoneNumber : phoneNumber, code: code};
-};
-
-DataHandler.prototype.generateCode = function(){
-    return Math.floor(Math.random()* 9000 + 1000);
+DataHandler.prototype.handleAuthRequest = function(req, fnOnValidate){
+    req.checkBody('phoneNumber', null).isInt();
+    req.getValidationResult().then((result) => {
+        if (result.isEmpty()){
+            let code;
+            if (process.env.NODE_ENV === 'development'){
+                code = process.env.TEST_AUTH_CODE;
+            } else {
+                code = this.generateCode();
+            };
+            return fnOnValidate(null, { phoneNumber : req.body.phoneNumber, code: code});
+        } else {
+            return fnOnValidate({ errorMsg : "Invalid phoneNumber! "});
+        }
+    });
 };
 
 module.exports = new DataHandler();

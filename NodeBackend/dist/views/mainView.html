@@ -2,10 +2,16 @@
   <div layout-align="center">
     <md-nav-bar md-selected-nav-item="vm.state" nav-bar-aria-label="navigation links">
         <div layout="row" layout-align="center" flex="50">
-      <md-nav-item md-nav-sref="root.cart" name="cart">Krepšelis</md-nav-item>
+            <md-nav-item md-nav-sref="root.menu" name="menu">Meniu</md-nav-item>
         </div>
         <div layout="row" layout-align="center" flex="50">
-      <md-nav-item md-nav-sref="root.history" name="history" >Užsakymų istorija</md-nav-item>
+      <md-nav-item md-nav-sref="root.cart" name="cart">
+          Krepšelis&nbsp;
+          <span class="md-subhead">{{vm.itemsCount}}</span>
+      </md-nav-item>
+        </div>
+        <div layout="row" layout-align="center" flex="50">
+      <md-nav-item md-nav-sref="root.history" name="history">Užsakymų istorija</md-nav-item>
         </div>
     </md-nav-bar>
   </div>

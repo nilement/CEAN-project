@@ -1,0 +1,12 @@
+<md-content flex>
+    <!-- Basket -->
+    <md-content layout="column" ng-repeat="category in vm.menu">
+        <md-toolbar class="md-toolbar-tools">
+            <h1>{{ category.category }}</h1>
+        </md-toolbar>
+        <menu-item-directive ng-repeat="item in category.dishes" imageLink="{{item.imageLink}}" title="{{item.name}}" count="{{item.count}}"
+                             price="{{item.price}}" add-dish-fn="vm.addDish(item)">
+        </menu-item-directive>
+    </md-content>
+</md-content>
+

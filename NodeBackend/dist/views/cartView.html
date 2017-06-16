@@ -6,13 +6,13 @@
     <md-content layout="column" ng-repeat="choice in vm.basket">
       <cart-item-directive imageLink="{{choice.imageLink}}" title="{{choice.name}}" count="{{choice.count}}"
                            price="{{choice.price}}" remove-fn="vm.removeDishSingle(choice)"
-                           add-fn="vm.addDish(choice.itemId)" remove-all-fn="vm.removeDishAll(choice)">
+                           add-fn="vm.addDishSingle(choice)" remove-all-fn="vm.removeDishAll(choice)">
       </cart-item-directive>
     </md-content>
     <md-card md-colors="{background: 'grey'}">&nbsp;</md-card>
     <md-card flex layout="row" layout-align="center space-between">
-      <md-button flex class="md-raised" md-colors="{background: 'green'}" ng-click="vm.showPrompt($event)">
-        Dėti į užsakymą {{vm.basketPrice}} €
+      <md-button flex class="md-raised" md-colors="{background: 'green'}" ng-click="vm.showPrompt($event)" ng-disabled="{{vm.orderLength === 0}}">
+        Užsakyti {{vm.basketPrice}} €
       </md-button>
     </md-card>
 </md-content>

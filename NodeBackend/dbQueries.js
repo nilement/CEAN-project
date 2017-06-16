@@ -52,7 +52,6 @@ Queries.prototype.sendOrder = function(order, fnOnComplete){
     if (error) {
         return fnOnComplete({errorMsg : 'Cant post to DB'});
     } else if (response.statusCode === 401){
-      // authentication fail status code, database cookie has expired
         return this.cookieAuth(this.sendOrder, order, fnOnComplete);
     } else if (201 === response.statusCode){
         return fnOnComplete(null);
