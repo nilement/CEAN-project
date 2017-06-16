@@ -148,7 +148,7 @@ app.post('/api/requestAuthentication', function (req, res) {
 
 //TODO: create user if none found
 app.post('/api/sendOrder', function(req, res){
-    const fnOnInputValidateComplete = function(err){
+    const fnOnPhoneValidateComplete = function(err){
         if (err){
             return res.status(400).send({ err: err.errorMsg });
         }
@@ -156,7 +156,7 @@ app.post('/api/sendOrder', function(req, res){
     };
     const fnOnCodeComplete = function(err, response){
         if (err){
-            return res.status(400).send({err : err});
+            return res.status(400).send({ err : err.errorMsg });
         } else {
             let codeFromDatabase = response.value[0].toString();
             if (req.body.phoneCode === codeFromDatabase){
@@ -172,15 +172,21 @@ app.post('/api/sendOrder', function(req, res){
         if (err){
             return res.status(400).send({ err : err.errorMsg });
         } else {
-            let orderDoc = dataHandler.createOrderObj(req);
-            dbQueries.sendOrder(orderDoc, fnOnOrderComplete);
+            return dataHandler.createOrderObj(req, fnOnInputValidateComplete);
+        }
+    };
+    const fnOnInputValidateComplete = function(orderDoc, err){
+        if (err){
+            return res.status(200).send({ err : err.errorMsg });
+        } else {
+            return dbQueries.sendOrder(orderDoc, fnOnOrderComplete);
         }
     };
     const fnOnOrderComplete = function(err){
         if (err){
-            res.status(400).send({err : 'Error'});
+            res.status(400).send({err : err.errorMsg });
         } else {
-            dbQueries.retrieveHistory(phoneNumber, fnOnHistoryRetrieveComplete);
+            return dbQueries.retrieveHistory(phoneNumber, fnOnHistoryRetrieveComplete);
         }
     };
     const fnOnHistoryRetrieveComplete = function(err, response){
@@ -195,8 +201,9 @@ app.post('/api/sendOrder', function(req, res){
                 }
         }
     };
-    dataHandler.handleOrderRequest(req, fnOnInputValidateComplete);
+    dataHandler.handleOrderRequest(req, fnOnPhoneValidateComplete);
 });
+
 //TODO: error if no phone found
 app.post('/api/resetPassword', function(req, res){
     const fnOnRecaptchaComplete = function(err){

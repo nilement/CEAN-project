@@ -44,9 +44,6 @@ DataHandler.prototype.createOrderObj = function(req, fnOnComplete){
     };
     req.checkBody('phoneNumber', null).notEmpty().isInt();
     req.checkBody('order', null).notEmpty();
-    console.log('is array?');
-    console.log(req.body.order.constructor === Array);
-    console.log(req.body.order);
     req.getValidationResult().then(function(result){
         if (!result.isEmpty()){
             return fnOnComplete({ errorMsg : 'Invalid data!' });

@@ -48,12 +48,16 @@ angular.module('menuApp').controller('cartAuthController', function($scope, $mdD
       var orderObj = { phoneCode : $scope.phoneCode, order : stateShareService.order, phoneNumber : $scope.phoneNumber };
       httpService.sendOrder(orderObj).then(
          function (response){
-             if (response.data.orders.length > 0) {
-                 $mdDialog.hide();
-                 stateShareService.history = response.data.orders;
-                 stateShareService.historyRetrieved = true;
-                 stateShareService.expandLatest = true;
-                 $state.go('root.history');
+             if (response.data.order) {
+                 if (response.data.orders.length > 0) {
+                     $mdDialog.hide();
+                     stateShareService.history = response.data.orders;
+                     stateShareService.historyRetrieved = true;
+                     stateShareService.expandLatest = true;
+                     $state.go('root.history');
+                 }
+             } else {
+                 alert(response.data.err);
              }
          });
   };
